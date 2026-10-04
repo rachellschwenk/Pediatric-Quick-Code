@@ -3,26 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4f5f0">
+  <meta name="theme-color" content="#101820">
   <title>Weight-based Dosage Calculator</title>
   <style>
     :root {
-      color-scheme: light;
-      --paper: #f3f6f8;
-      --surface: #fff;
-      --ink: #1c303d;
-      --muted: #5b6d78;
-      --line: #d8e1e6;
-      --green: #16776d;
-      --green-dark: #0e5b53;
-      --mint: #e7f3f1;
-      --coral: #a9433b;
-      --coral-pale: #fff0ed;
-      --gold: #bd8023;
-      --shadow: 0 2px 8px rgb(28 48 61 / 6%);
+      color-scheme: dark;
+      --paper: #101820;
+      --surface: #1b2832;
+      --ink: #f3f7f8;
+      --muted: #c2cdd2;
+      --line: #536771;
+      --green: #54c8ae;
+      --green-dark: #a0f0dc;
+      --mint: #263f43;
+      --coral: #ff8c82;
+      --coral-pale: #482b2c;
+      --gold: #f2c36b;
+      --shadow: 0 3px 12px rgb(0 0 0 / 28%);
+      --input-bg: #24343e;
+      --input-border: #748992;
+      --input-placeholder: #b1c0c6;
+      --readonly-bg: #26343e;
+      --readonly-ink: #e0e8eb;
+      --accent-ink: #10231f;
+      --focus: #75e3c8;
+      --additional-bg: #202f35;
+      --result-bg: #193b3a;
+      --result-border: #58a99c;
+      --result-detail: #d1dedf;
+      --notice-ink: #fff1cf;
+      --notice-bg: #302719;
+      --notice-border: #9b7a43;
       font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
       font-synthesis: none;
       text-rendering: optimizeLegibility;
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --paper: #eef2f4;
+      --surface: #fff;
+      --ink: #10232d;
+      --muted: #3d505b;
+      --line: #8799a2;
+      --green: #075f55;
+      --green-dark: #064941;
+      --mint: #d9ece8;
+      --coral: #8f211b;
+      --coral-pale: #ffebe8;
+      --gold: #754900;
+      --shadow: 0 2px 8px rgb(16 35 45 / 12%);
+      --input-bg: #fff;
+      --input-border: #71858f;
+      --input-placeholder: #53636b;
+      --readonly-bg: #f3f6f3;
+      --readonly-ink: #53615a;
+      --accent-ink: #fff;
+      --focus: #075f55;
+      --additional-bg: #f6f9f7;
+      --result-bg: #deeeee;
+      --result-border: #71878d;
+      --result-detail: #263a42;
+      --notice-ink: #302516;
+      --notice-bg: #fff9eb;
+      --notice-border: #9b7a43;
     }
 
     * { box-sizing: border-box; }
@@ -48,6 +92,12 @@
       background: var(--surface);
     }
 
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
     .brand {
       display: flex;
       align-items: center;
@@ -64,7 +114,7 @@
       height: 30px;
       place-items: center;
       border-radius: 9px;
-      color: white;
+      color: var(--accent-ink);
       background: var(--green);
     }
 
@@ -156,17 +206,23 @@
       width: 100%;
       height: 48px;
       padding: 0 48px 0 12px;
-      border: 1px solid #c5d1d8;
+      border: 1px solid var(--input-border);
       border-radius: 5px;
       color: var(--ink);
-      background: #fff;
+      background: var(--input-bg);
       font-size: 18px;
       font-weight: 700;
     }
 
-    .input-with-unit input:focus, .field input:focus, .category-choice input:focus-visible {
+    .input-with-unit input:focus, .field input:focus, .medication-search input:focus {
       border-color: var(--green);
-      outline: 3px solid rgb(22 119 109 / 15%);
+      outline: 3px solid var(--focus);
+      outline-offset: 1px;
+    }
+
+    .category-choice input:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
     }
 
     .unit {
@@ -219,11 +275,62 @@
     .text-button:hover { background: var(--mint); }
     .text-button svg { width: 16px; height: 16px; }
     button:focus-visible, select:focus-visible, summary:focus-visible {
-      outline: 3px solid rgb(22 119 109 / 25%);
+      outline: 3px solid var(--focus);
       outline-offset: 2px;
     }
 
+    .theme-toggle {
+      min-height: 36px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--ink);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .theme-toggle:hover { background: var(--mint); }
+
     .dose-list { display: grid; gap: 13px; }
+
+    .medication-search {
+      max-width: 540px;
+      margin-top: 22px;
+    }
+
+    .medication-search label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .medication-search input {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      color: var(--ink);
+      background: var(--input-bg);
+      font-size: 14px;
+    }
+
+    .medication-search input:focus {
+      border-color: var(--green);
+      outline: 3px solid var(--focus);
+      outline-offset: 1px;
+    }
+
+    .medication-search-status {
+      min-height: 18px;
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
 
     .category-toolbar {
       display: flex;
@@ -248,9 +355,9 @@
     .category-filter button {
       min-height: 34px;
       padding: 0 12px;
-      border: 1px solid #cbd7dd;
+      border: 1px solid var(--input-border);
       border-radius: 5px;
-      color: #425864;
+      color: var(--ink);
       background: var(--surface);
       font: inherit;
       font-size: 12px;
@@ -260,7 +367,7 @@
 
     .category-filter button[aria-pressed="true"] {
       border-color: var(--green);
-      color: #fff;
+      color: var(--accent-ink);
       background: var(--green);
     }
 
@@ -291,7 +398,7 @@
 
     .category-field legend {
       margin-bottom: 7px;
-      color: #46534d;
+      color: var(--muted);
       font-size: 11px;
       font-weight: 700;
     }
@@ -330,16 +437,16 @@
 
     .dose-card {
       overflow: hidden;
-      border: 1px solid var(--line);
+      border: 2px solid var(--line);
       border-radius: 6px;
       background: var(--surface);
-      box-shadow: 0 1px 3px rgb(28 48 61 / 5%);
+      box-shadow: 0 2px 5px rgb(16 35 45 / 10%);
       animation: enter 240ms ease-out both;
     }
 
     .dose-card.is-preloaded .field input[readonly] {
-      color: #53615a;
-      background: #f3f6f3;
+      color: var(--readonly-ink);
+      background: var(--readonly-bg);
       cursor: default;
     }
 
@@ -393,40 +500,77 @@
 
     .dose-card-body {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
-      padding: 12px 16px 14px;
+      padding: 10px 12px 12px;
+    }
+
+    .regimen-core {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr 1fr;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .regimen-core .field label {
+      margin-bottom: 3px;
+      font-size: 10px;
+    }
+
+    .regimen-core .field input {
+      height: 30px;
+      padding: 0 7px;
+      font-size: 12px;
+    }
+
+    .regimen-additional {
+      display: grid;
+      grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.4fr);
+      gap: 10px;
+      padding: 2px 8px 8px;
+      border-left: 2px solid var(--green);
+      background: var(--additional-bg);
+    }
+
+    .regimen-additional .field label {
+      margin-bottom: 6px;
+      font-size: 11px;
+    }
+
+    .regimen-additional .field input {
+      height: 40px;
+      font-size: 14px;
     }
 
     .field label {
       display: block;
-      margin-bottom: 7px;
-      color: #46534d;
-      font-size: 11px;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
       font-weight: 650;
     }
 
     .field input {
       width: 100%;
-      height: 40px;
+      height: 36px;
       padding: 0 10px;
-      border: 1px solid #cbd7dd;
+      border: 1px solid var(--input-border);
       border-radius: 5px;
       color: var(--ink);
-      background: #fff;
-      font-size: 14px;
+      background: var(--input-bg);
+      font-size: 13px;
     }
 
-    .field input::placeholder { color: #9aa39e; }
+    .field input::placeholder { color: var(--input-placeholder); }
 
     .result {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       padding: 12px 16px;
-      border-top: 1px solid #dce7e8;
-      border-bottom: 1px solid #dce7e8;
-      background: #eef5f5;
+      border-top: 2px solid var(--result-border);
+      border-bottom: 2px solid var(--result-border);
+      background: var(--result-bg);
     }
 
     .result-item { min-width: 0; }
@@ -435,7 +579,7 @@
       display: block;
       margin-bottom: 3px;
       color: var(--muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
     }
@@ -450,34 +594,34 @@
 
     .result-value small {
       margin-left: 3px;
-      color: #53645c;
+      color: var(--result-detail);
       font-size: 11px;
       font-weight: 600;
     }
 
-    .empty-result { color: #8b9690; font-size: 14px; font-weight: 500; }
+    .empty-result { color: var(--muted); font-size: 14px; font-weight: 650; }
 
     .dose-settings summary {
-      padding: 9px 18px;
+      padding: 8px 14px;
       color: var(--muted);
-      font-size: 12px;
-      font-weight: 650;
+      font-size: 11px;
+      font-weight: 700;
       cursor: pointer;
       user-select: none;
     }
 
-    .dose-settings[open] summary { border-bottom: 1px solid #edf0ec; }
+    .dose-settings[open] summary { border-bottom: 1px solid var(--line); }
 
     .notice {
       display: flex;
       gap: 11px;
       margin-top: 25px;
       padding: 14px 16px;
-      border: 1px solid #e4d8bd;
-      border-left: 4px solid var(--gold);
+      border: 1px solid var(--notice-border);
+      border-left: 5px solid var(--gold);
       border-radius: 6px;
-      color: #4d4a3f;
-      background: #fbf9f3;
+      color: var(--notice-ink);
+      background: var(--notice-bg);
       font-size: 12px;
       line-height: 1.5;
     }
@@ -496,7 +640,8 @@
       main { padding-top: 32px; }
       h1 { font-size: 30px; }
       .weight-panel { grid-template-columns: 1fr; gap: 14px; padding: 17px; }
-      .dose-card-body { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .regimen-core { gap: 6px; }
+      .regimen-additional { grid-template-columns: minmax(100px, 0.8fr) minmax(0, 1.4fr); }
       .section-heading { align-items: flex-start; flex-wrap: wrap; }
       .section-heading > div { min-width: 0; flex: 1 1 190px; }
       .section-heading h2 { font-size: 19px; }
@@ -510,13 +655,17 @@
 
     @media (max-width: 420px) {
       .topbar { gap: 10px; padding-right: 16px; padding-left: 16px; }
-      .tool-label { font-size: 11px; }
+      .topbar-actions { gap: 8px; }
+      .tool-label { display: none; }
+      .theme-toggle { min-height: 34px; padding: 0 8px; font-size: 11px; }
       main { width: min(100% - 32px, 960px); }
       .library-form { grid-template-columns: 1fr; }
       .library-form .field:first-child,
       .library-form button { grid-column: auto; }
       .dose-card-header { padding-right: 12px; padding-left: 12px; }
-      .dose-card-body { grid-template-columns: 1fr; }
+      .regimen-core { grid-template-columns: 1.1fr 0.9fr 1fr; gap: 5px; }
+      .regimen-core .field label { font-size: 9px; }
+      .regimen-additional { grid-template-columns: 1fr; }
       .result { gap: 8px; padding-right: 12px; padding-left: 12px; }
       .result-value { font-size: 20px; }
       .dose-settings summary { padding-right: 12px; padding-left: 12px; }
@@ -531,16 +680,25 @@
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M4 12h16"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18.5h.01M12 18.5h.01M16 18.5h.01"/></svg>
       </span>
       <span>Pediatric Quick Code</span>
     </div>
-    <span class="tool-label">Dosage calculator</span>
+    <div class="topbar-actions">
+      <span class="tool-label">Dosage calculator</span>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light theme">Light theme</button>
+    </div>
   </header>
 
   <main>
     <h1>Weight-based dosage calculator</h1>
     <p class="intro">Calculate per-dose amounts from a patient’s weight and a regimen you provide.</p>
+
+    <div class="medication-search">
+      <label for="medication-search">Search medications</label>
+      <input id="medication-search" type="search" placeholder="Type a medication name" autocomplete="off">
+      <p class="medication-search-status" id="medication-search-status" aria-live="polite"></p>
+    </div>
 
     <section class="weight-panel" aria-labelledby="weight-label">
       <div class="weight-copy">
@@ -643,25 +801,29 @@
       <details class="dose-settings">
         <summary>Regimen details</summary>
         <div class="dose-card-body">
-          <div class="field">
-            <label class="name-label">Medication / regimen name</label>
-            <input class="name-input" type="text" maxlength="60" placeholder="e.g. Medication A">
+          <div class="regimen-core">
+            <div class="field">
+              <label class="name-label">Medication / regimen name</label>
+              <input class="name-input" type="text" maxlength="60" placeholder="e.g. Medication A">
+            </div>
+            <div class="field">
+              <label class="dose-label">Dose (<span class="dose-unit-label">mg/kg/dose</span>)</label>
+              <input class="dose-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 10">
+            </div>
+            <div class="field">
+              <label class="concentration-label">Concentration (<span class="concentration-unit-label">mg/mL</span>)</label>
+              <input class="concentration-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 20">
+            </div>
           </div>
-          <div class="field">
-            <label class="dose-label">Dose per administration (<span class="dose-unit-label">mg/kg/dose</span>)</label>
-            <input class="dose-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 10">
-          </div>
-          <div class="field">
-            <label class="max-label">Maximum per dose (<span class="max-dose-unit-label">mg</span>)</label>
-            <input class="max-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="No maximum">
-          </div>
-          <div class="field">
-            <label class="concentration-label">Concentration (<span class="concentration-unit-label">mg/mL</span>)</label>
-            <input class="concentration-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 20">
-          </div>
-          <div class="field">
-            <label class="infusion-time-label">Infusion time (reference only)</label>
-            <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
+          <div class="regimen-additional">
+            <div class="field">
+              <label class="max-label">Maximum per dose (<span class="max-dose-unit-label">mg</span>)</label>
+              <input class="max-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="No maximum">
+            </div>
+            <div class="field">
+              <label class="infusion-time-label">Infusion time (reference only)</label>
+              <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
+            </div>
           </div>
         </div>
       </details>
@@ -669,6 +831,38 @@
   </template>
 
   <script>
+    const themeToggle = document.querySelector("#theme-toggle");
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+    function setTheme(theme, persist = false) {
+      const activeTheme = theme === "light" ? "light" : "dark";
+      document.documentElement.dataset.theme = activeTheme;
+      const nextTheme = activeTheme === "dark" ? "light" : "dark";
+      themeToggle.textContent = `${nextTheme === "light" ? "Light" : "Dark"} theme`;
+      themeToggle.setAttribute("aria-label", `Switch to ${nextTheme} theme`);
+      themeColorMeta.content = activeTheme === "dark" ? "#101820" : "#eef2f4";
+      if (persist) {
+        try {
+          localStorage.setItem("pediatricQuickCode.theme", activeTheme);
+        } catch (error) {
+          console.warn("Theme preference could not be saved.", error);
+        }
+      }
+    }
+
+    let savedTheme = "dark";
+    try {
+      const preference = localStorage.getItem("pediatricQuickCode.theme");
+      if (preference === "light" || preference === "dark") savedTheme = preference;
+    } catch (error) {
+      console.warn("Theme preference could not be loaded.", error);
+    }
+    setTheme(savedTheme);
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      setTheme(nextTheme, true);
+    });
+
     const weightInput = document.querySelector("#weight");
     const doseList = document.querySelector("#dose-list");
     const doseTemplate = document.querySelector("#dose-template");
@@ -676,6 +870,8 @@
     const presetStatus = document.querySelector("#library-status");
     const categoryFilter = document.querySelector("#category-filter");
     const presetCategory = document.querySelector("#preset-category");
+    const medicationSearch = document.querySelector("#medication-search");
+    const medicationSearchStatus = document.querySelector("#medication-search-status");
     let calculationCount = 0;
     let selectedCategory = "__all__";
 
@@ -833,10 +1029,25 @@
       categoryFilter.querySelectorAll("button").forEach((button) => {
         button.setAttribute("aria-pressed", String(button.dataset.category === selectedCategory));
       });
+      applyMedicationFilters();
+    }
+
+    function applyMedicationFilters() {
+      const searchTerm = medicationSearch.value.trim().toLocaleLowerCase();
+      let visibleCount = 0;
       doseList.querySelectorAll(".dose-card").forEach((card) => {
         const categories = JSON.parse(card.dataset.categories || "[]");
-        card.hidden = selectedCategory !== "__all__" && !categories.includes(selectedCategory);
+        const medicationName = card.querySelector(".name-input").value.trim().toLocaleLowerCase();
+        const matchesCategory = selectedCategory === "__all__" || categories.includes(selectedCategory);
+        const matchesSearch = !searchTerm || medicationName.includes(searchTerm);
+        card.hidden = !matchesCategory || !matchesSearch;
+        if (!card.hidden) visibleCount += 1;
       });
+      medicationSearchStatus.textContent = searchTerm
+        ? visibleCount === 0
+          ? "No medications found."
+          : `${visibleCount} medication${visibleCount === 1 ? "" : "s"} found.`
+        : "";
     }
 
     function formatAmount(value) {
@@ -915,7 +1126,7 @@
         });
         removeButton.remove();
       } else {
-        doseSettings.open = true;
+        doseSettings.open = false;
       }
       nameInput.id = `name-${calculationNumber}`;
       doseInput.id = `dose-${calculationNumber}`;
@@ -928,10 +1139,14 @@
 
       nameInput.addEventListener("input", () => {
         title.textContent = nameInput.value.trim() || `Calculation ${calculationNumber}`;
+        applyMedicationFilters();
       });
       card.addEventListener("input", () => updateCalculation(card));
       if (!isPreloaded) {
-        removeButton.addEventListener("click", () => card.remove());
+        removeButton.addEventListener("click", () => {
+          card.remove();
+          applyMedicationFilters();
+        });
       }
       doseList.append(card);
       updateCalculation(card);
@@ -941,7 +1156,9 @@
     weightInput.addEventListener("input", () => {
       doseList.querySelectorAll(".dose-card").forEach(updateCalculation);
     });
+    medicationSearch.addEventListener("input", applyMedicationFilters);
     document.querySelector("#add-dose").addEventListener("click", () => {
+      medicationSearch.value = "";
       applyCategoryFilter("__all__");
       addCalculation();
     });
@@ -972,20 +1189,13 @@
       saveMedicationPresets();
       populateCategoryOptions();
       addCalculation(preset);
+      medicationSearch.value = "";
       applyCategoryFilter("__all__");
       presetForm.reset();
       presetForm.hidden = true;
       document.querySelector("#toggle-preset-form").setAttribute("aria-expanded", "false");
     });
     populateCategoryOptions();
-    PRELOADED_MEDICATIONS.forEach((preset) => addCalculation(preset, true));
-    savedMedicationPresets.forEach((preset) => addCalculation(preset));
-    if (PRELOADED_MEDICATIONS.length === 0 && savedMedicationPresets.length === 0) {
-      addCalculation();
-    }
-  </script>
-</body>
-</html>    });
     PRELOADED_MEDICATIONS.forEach((preset) => addCalculation(preset, true));
     savedMedicationPresets.forEach((preset) => addCalculation(preset));
     if (PRELOADED_MEDICATIONS.length === 0 && savedMedicationPresets.length === 0) {
