@@ -34,6 +34,9 @@
       --notice-ink: #fff1cf;
       --notice-bg: #302719;
       --notice-border: #9b7a43;
+      --alert-ink: #ffe5e2;
+      --alert-bg: #482329;
+      --alert-border: #ff8c82;
       font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
       font-synthesis: none;
       text-rendering: optimizeLegibility;
@@ -67,6 +70,9 @@
       --notice-ink: #302516;
       --notice-bg: #fff9eb;
       --notice-border: #9b7a43;
+      --alert-ink: #571b18;
+      --alert-bg: #fff0ed;
+      --alert-border: #a52b24;
     }
 
     * { box-sizing: border-box; }
@@ -542,6 +548,25 @@
       font-size: 14px;
     }
 
+    .high-alert-field {
+      grid-column: 1 / -1;
+    }
+
+    .high-alert-message {
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--alert-border);
+      border-left: 5px solid var(--alert-border);
+      border-radius: 5px;
+      color: var(--alert-ink);
+      background: var(--alert-bg);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
     .field label {
       display: block;
       margin-bottom: 5px;
@@ -766,6 +791,10 @@
           <label for="preset-infusion-time">Infusion time (reference only)</label>
           <input id="preset-infusion-time" name="infusionTime" type="text" maxlength="60" placeholder="e.g. Per approved reference">
         </div>
+        <div class="field">
+          <label for="preset-high-alert">High-alert message (optional)</label>
+          <input id="preset-high-alert" name="highAlertMessage" type="text" maxlength="300" placeholder="Enter a message to display with this regimen">
+        </div>
         <button class="text-button" type="submit">Save preset</button>
       </form>
       <p class="library-status" id="library-status" role="status" aria-live="polite"></p>
@@ -825,6 +854,11 @@
               <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
             </div>
           </div>
+          <div class="field high-alert-field">
+            <label class="high-alert-label">High-alert message (optional)</label>
+            <input class="high-alert-input" type="text" maxlength="300" placeholder="Enter a message to display with this regimen">
+          </div>
+          <p class="high-alert-message" hidden role="note"><strong>High-alert: </strong><span class="high-alert-copy"></span></p>
         </div>
       </details>
     </article>
@@ -888,7 +922,8 @@
     maxDose: 6, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 3, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    highalertmessage: "WOAH"
   },
   {
     name: "Adenosine REPEAT DOSE",
@@ -1100,7 +1135,17 @@
       const concentrationInput = card.querySelector(".concentration-input");
       const concentrationUnitLabel = card.querySelector(".concentration-unit-label");
       const infusionTimeInput = card.querySelector(".infusion-time-input");
+      const highAlertInput = card.querySelector(".high-alert-input");
+      const highAlertField = card.querySelector(".high-alert-field");
+      const highAlertMessage = card.querySelector(".high-alert-message");
+      const highAlertCopy = card.querySelector(".high-alert-copy");
       const removeButton = card.querySelector(".remove-button");
+
+      function updateHighAlertMessage() {
+        const message = highAlertInput.value.trim();
+        highAlertCopy.textContent = message;
+        highAlertMessage.hidden = message.length === 0;
+      }
 
       title.textContent = `Calculation ${calculationNumber}`;
       const categories = getPresetCategories(preset || {});
@@ -1116,30 +1161,42 @@
         concentrationInput.value = preset.concentration || "";
         concentrationUnitLabel.textContent = preset.concentrationUnit || "mg/mL";
         infusionTimeInput.value = preset.infusionTime || "";
+        highAlertInput.value = preset.highAlertMessage || "";
         title.textContent = preset.name;
       }
       if (isPreloaded) {
         card.classList.add("is-preloaded");
         doseSettings.open = false;
-        [nameInput, doseInput, maxInput, concentrationInput, infusionTimeInput].forEach((input) => {
+        [nameInput, doseInput, maxInput, concentrationInput, infusionTimeInput, highAlertInput].forEach((input) => {
           input.readOnly = true;
         });
+        highAlertField.hidden = !highAlertInput.value.trim();
         removeButton.remove();
       } else {
         doseSettings.open = false;
       }
+      updateHighAlertMessage();
       nameInput.id = `name-${calculationNumber}`;
       doseInput.id = `dose-${calculationNumber}`;
       maxInput.id = `max-${calculationNumber}`;
       concentrationInput.id = `concentration-${calculationNumber}`;
+      highAlertInput.id = `high-alert-${calculationNumber}`;
       card.querySelector(".name-label").htmlFor = nameInput.id;
       card.querySelector(".dose-label").htmlFor = doseInput.id;
       card.querySelector(".max-label").htmlFor = maxInput.id;
       card.querySelector(".concentration-label").htmlFor = concentrationInput.id;
+      card.querySelector(".high-alert-label").htmlFor = highAlertInput.id;
 
       nameInput.addEventListener("input", () => {
         title.textContent = nameInput.value.trim() || `Calculation ${calculationNumber}`;
         applyMedicationFilters();
+      });
+      highAlertInput.addEventListener("input", () => {
+        updateHighAlertMessage();
+        if (preset && savedMedicationPresets.includes(preset)) {
+          preset.highAlertMessage = highAlertInput.value.trim();
+          saveMedicationPresets();
+        }
       });
       card.addEventListener("input", () => updateCalculation(card));
       if (!isPreloaded) {
@@ -1189,7 +1246,8 @@
         doseRate: Number(formData.get("doseRate")),
         maxDose: maxDose ? Number(maxDose) : "",
         concentration: concentration ? Number(concentration) : "",
-        infusionTime: formData.get("infusionTime").trim()
+        infusionTime: formData.get("infusionTime").trim(),
+        highAlertMessage: formData.get("highAlertMessage").trim()
       };
       savedMedicationPresets.push(preset);
       saveMedicationPresets();
