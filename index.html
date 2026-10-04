@@ -552,6 +552,27 @@
       grid-column: 1 / -1;
     }
 
+    .high-alert-editor {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+    }
+
+    .high-alert-editor[hidden] { display: none; }
+    .high-alert-field { flex: 1; min-width: 0; }
+
+    .high-alert-toggle {
+      min-height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--alert-border);
+      border-radius: 5px;
+      color: var(--alert-ink);
+      background: var(--alert-bg);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
     .high-alert-message {
       margin: 0;
       padding: 10px 12px;
@@ -854,9 +875,12 @@
               <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
             </div>
           </div>
-          <div class="field high-alert-field">
-            <label class="high-alert-label">High-alert message (optional)</label>
-            <input class="high-alert-input" type="text" maxlength="300" placeholder="Enter a message to display with this regimen">
+          <div class="high-alert-editor">
+            <div class="field high-alert-field">
+              <label class="high-alert-label">High-alert message (optional)</label>
+              <input class="high-alert-input" type="text" maxlength="300" placeholder="Enter a message to display with this regimen">
+            </div>
+            <button class="high-alert-toggle" type="button" hidden></button>
           </div>
           <p class="high-alert-message" hidden role="note"><strong>High-alert: </strong><span class="high-alert-copy"></span></p>
         </div>
@@ -923,7 +947,7 @@
     maxDoseUnit: "mg",
     concentration: 3, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    highalertmessage: "WOAH"
+    highAlertMessage: "WOAH"
   },
   {
     name: "Adenosine REPEAT DOSE",
@@ -963,7 +987,8 @@
     maxDose: 2000, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "5-10 minutes. Do not exceed 100mg/min except in emergencies."
   },
   {
     name: "Calcium Gluconate",
@@ -988,10 +1013,270 @@
     name: "Dextrose",
     categories: ["Emergency"],
     doseRate: 5, // Replace with approved mg/kg/dose value
-    doseUnit: "ml/kg",
+    doseUnit: "mL/kg",
     maxDose: 250, // Optional, in mg
+    maxDoseUnit: "mL",
+    concentration: 10, // Optional, in mg/mL
+    concentrationUnit: "%"
+  },
+  {
+    name: "Epinephrine ANAPHYLAXIS",
+    categories: ["Emergency"],
+    doseRate: 0.01, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 0.3, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 1, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Epinephrine CODE",
+    categories: ["Emergency"],
+    doseRate: 0.01, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.1, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Epinephrine ETT",
+    categories: ["Emergency"],
+    doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 2.5, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 1, // Optional, in mg/mL
+    concentrationUnit: "mg/mL",
+    highAlertMessage: "ONLY for use in CPR"
+  },
+  {
+    name: "Epinephrine Peri-arrest",
+    categories: ["Emergency"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "mcg/kg",
+    maxDose: 100, // Optional, in mg
+    maxDoseUnit: "mcg",
+    concentration: 10, // Optional, in mg/mL
+    concentrationUnit: "mcg/mL"
+  },
+  {
+    name: "Etomidate",
+    categories: ["Sedation"],
+    doseRate: 0.3, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 20, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 2, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Fentanyl",
+    categories: ["Sedation"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "mcg/kg",
+    maxDose: 100, // Optional, in mcg
+    maxDoseUnit: "mcg",
+    concentration: 50, // Optional, in mg/mL
+    concentrationUnit: "mcg/mL"
+  },
+  {
+    name: "Flumazenil",
+    categories: ["Reversal"],
+    doseRate: 0.01, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 0.2, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.1, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Fosphenytin",
+    categories: ["Seizure"],
+    doseRate: 20, // Replace with approved mg/kg/dose value
+    doseUnit: "mgPE/kg",
+    maxDose: 1500, // Optional, in mg
+    maxDoseUnit: "mgPE",
+    concentration: 50, // Optional, in mg/mL
+    concentrationUnit: "mgPE/mL"
+  },
+  {
+    name: "Ketamine",
+    categories: ["Sedation"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 100, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 10, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Levetiracetam",
+    categories: ["Seizure"],
+    doseRate: 60, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 4500, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 100, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Lidocaine 2%",
+    categories: ["Cardiac, Emergency"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 20, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Lorazepam",
+    categories: ["Emergency"],
+    doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 4, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 2, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Mannitol",
+    categories: ["Emergency"],
+    doseRate: 0.5, // Replace with approved mg/kg/dose value
+    doseUnit: "g/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.2, // Optional, in mg/mL
+    concentrationUnit: "g/mL (20%)"
+  },
+  {
+    name: "Mannitol MAX DOSE",
+    categories: ["Emergency"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "g/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.2, // Optional, in mg/mL
+    concentrationUnit: "g/mL (20%)"
+  },
+  {
+    name: "Midazolam",
+    categories: ["Seizure"],
+    doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 10, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 5, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Midazolam INTRANASAL",
+    categories: ["Seizure"],
+    doseRate: 0.2, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 10, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 5, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Morphine",
+    categories: ["Sedation"],
+    doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 4, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 4, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Naloxone",
+    categories: ["Reversal"],
+    doseRate: 0.01, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 0.4, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.4, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Naloxone FULL REVERSAL",
+    categories: ["Reversal"],
+    doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 2, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.4, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Rocuronium",
+    categories: ["Sedation"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 100, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 10, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Sodium Bicarbonate",
+    categories: ["Cardiac, Emergency"],
+    doseRate: 1, // Replace with approved mg/kg/dose value
+    doseUnit: "mEq/kg",
+    maxDose: 50, // Optional, in mg
+    maxDoseUnit: "mEq",
+    concentration: 1, // Optional, in mg/mL
+    concentrationUnit: "mEq/mL"
+  },
+  {
+    name: "Sodium CHloride 3% (Hypertonic Saline)",
+    categories: ["Emergency"],
+    doseRate: 5, // Replace with approved mg/kg/dose value
+    doseUnit: "mL/kg",
+    maxDose: 500, // Optional, in mg
+    maxDoseUnit: "mL"
+  },
+  {
+    name: "Succinylcholine",
+    categories: ["Sedation"],
+    doseRate: 1.5, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 20, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  }
+  ,
+  {
+    name: "Sugammadex",
+    categories: ["Reversal"],
+    doseRate: 16, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 100, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Tranexamic Acid IV",
+    categories: ["Emergency"],
+    doseRate: 15, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 1000, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 100, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Vecuronium",
+    categories: ["Sedation"],
+    doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg",
+    maxDose: 1, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 1, // Optional, in mg/mL
     concentrationUnit: "mg/mL"
   }
     ];
@@ -1136,15 +1421,29 @@
       const concentrationUnitLabel = card.querySelector(".concentration-unit-label");
       const infusionTimeInput = card.querySelector(".infusion-time-input");
       const highAlertInput = card.querySelector(".high-alert-input");
+      const highAlertEditor = card.querySelector(".high-alert-editor");
       const highAlertField = card.querySelector(".high-alert-field");
+      const highAlertToggle = card.querySelector(".high-alert-toggle");
       const highAlertMessage = card.querySelector(".high-alert-message");
       const highAlertCopy = card.querySelector(".high-alert-copy");
       const removeButton = card.querySelector(".remove-button");
 
       function updateHighAlertMessage() {
         const message = highAlertInput.value.trim();
+        const hasMessage = message.length > 0;
+        const isEditing = !highAlertField.hidden;
         highAlertCopy.textContent = message;
-        highAlertMessage.hidden = message.length === 0;
+        highAlertMessage.hidden = !hasMessage || isEditing;
+        if (isPreloaded) {
+          highAlertField.hidden = true;
+          highAlertToggle.hidden = true;
+          highAlertMessage.hidden = !hasMessage;
+          return;
+        }
+        highAlertToggle.hidden = !hasMessage && isEditing;
+        highAlertToggle.textContent = isEditing
+          ? (hasMessage ? "Done" : "")
+          : (hasMessage ? "Edit message" : "Add message");
       }
 
       title.textContent = `Calculation ${calculationNumber}`;
@@ -1170,10 +1469,12 @@
         [nameInput, doseInput, maxInput, concentrationInput, infusionTimeInput, highAlertInput].forEach((input) => {
           input.readOnly = true;
         });
-        highAlertField.hidden = !highAlertInput.value.trim();
+        highAlertField.hidden = true;
+        highAlertToggle.hidden = true;
         removeButton.remove();
       } else {
         doseSettings.open = false;
+        highAlertField.hidden = Boolean(preset && highAlertInput.value.trim());
       }
       updateHighAlertMessage();
       nameInput.id = `name-${calculationNumber}`;
@@ -1197,6 +1498,17 @@
           preset.highAlertMessage = highAlertInput.value.trim();
           saveMedicationPresets();
         }
+      });
+      highAlertEditor.addEventListener("focusout", (event) => {
+        if (!highAlertEditor.contains(event.relatedTarget) && highAlertInput.value.trim()) {
+          highAlertField.hidden = true;
+          updateHighAlertMessage();
+        }
+      });
+      highAlertToggle.addEventListener("click", () => {
+        highAlertField.hidden = !highAlertField.hidden;
+        updateHighAlertMessage();
+        if (!highAlertField.hidden) highAlertInput.focus();
       });
       card.addEventListener("input", () => updateCalculation(card));
       if (!isPreloaded) {
