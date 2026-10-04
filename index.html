@@ -1144,7 +1144,13 @@
       card.addEventListener("input", () => updateCalculation(card));
       if (!isPreloaded) {
         removeButton.addEventListener("click", () => {
+          const isSavedPreset = preset && savedMedicationPresets.includes(preset);
           card.remove();
+          if (isSavedPreset) {
+            savedMedicationPresets = savedMedicationPresets.filter((savedPreset) => savedPreset !== preset);
+            saveMedicationPresets();
+            populateCategoryOptions();
+          }
           applyMedicationFilters();
         });
       }
