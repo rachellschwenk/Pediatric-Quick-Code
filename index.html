@@ -989,7 +989,7 @@
     maxDoseUnit: "mg",
     concentration: 3, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    highAlertMessage: "WOAH"
+    infusiontime: "rapid push with flush"
   },
   {
     name: "Adenosine REPEAT DOSE",
@@ -999,7 +999,8 @@
     maxDose:12, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 3, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push with flush"
   },
   {
     name: "Amiodarone",
@@ -1009,7 +1010,8 @@
     maxDose: 300, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 50, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "Over 20-60min. ONLY rapid push in pulseless VF/VT"
   },
   {
     name: "Atropine",
@@ -1019,7 +1021,8 @@
     maxDose: 0.5, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 0.4, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   },
   {
     name: "Calcium Chloride",
@@ -1040,7 +1043,8 @@
     maxDose: 2000, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "5-10 minutes. Do not exceed 100mg/min except in emergencies."
   },
   {
     name: "Cisatracurium",
@@ -1049,7 +1053,8 @@
     doseUnit: "mg/kg/dose",
     maxDoseUnit: "mg",
     concentration: 2, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   },
   {
     name: "Dextrose",
@@ -1059,7 +1064,8 @@
     maxDose: 250, // Optional, in mg
     maxDoseUnit: "mL",
     concentration: 10, // Optional, in mg/mL
-    concentrationUnit: "%"
+    concentrationUnit: "%",
+    infusiontime: "Over at least 1 min"
   },
   {
     name: "Epinephrine ANAPHYLAXIS",
@@ -1069,7 +1075,8 @@
     maxDose: 0.3, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 1, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "IM push"
   },
   {
     name: "Epinephrine CODE",
@@ -1079,7 +1086,8 @@
     maxDose: 1, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 0.1, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   },
   {
     name: "Epinephrine ETT",
@@ -1090,6 +1098,7 @@
     maxDoseUnit: "mg",
     concentration: 1, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
+    infusiontime: "rapid push",
     highAlertMessage: "ONLY for use in CPR"
   },
   {
@@ -1100,7 +1109,8 @@
     maxDose: 100, // Optional, in mg
     maxDoseUnit: "mcg",
     concentration: 10, // Optional, in mg/mL
-    concentrationUnit: "mcg/mL"
+    concentrationUnit: "mcg/mL",
+    infusiontime: "rapid push"
   },
   {
     name: "Etomidate",
@@ -1110,7 +1120,9 @@
     maxDose: 20, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 2, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "30-60 seconds",
+    highAlertMessage: "Do not use in <2 months. Midazolam preferred."
   },
   {
     name: "Fentanyl",
@@ -1120,7 +1132,8 @@
     maxDose: 100, // Optional, in mcg
     maxDoseUnit: "mcg",
     concentration: 50, // Optional, in mg/mL
-    concentrationUnit: "mcg/mL"
+    concentrationUnit: "mcg/mL",
+    infusiontime: "slow push over 3-5 minutes"
   },
   {
     name: "Flumazenil",
@@ -1130,7 +1143,8 @@
     maxDose: 0.2, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 0.1, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "15-30 seconds"
   },
   {
     name: "Fosphenytin",
@@ -1140,7 +1154,8 @@
     maxDose: 1500, // Optional, in mg
     maxDoseUnit: "mgPE",
     concentration: 50, // Optional, in mg/mL
-    concentrationUnit: "mgPE/mL"
+    concentrationUnit: "mgPE/mL",
+    infusiontime: "10-30 minutes"
   },
   {
     name: "Ketamine",
@@ -1150,7 +1165,8 @@
     maxDose: 100, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 10, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "slow push 1-3 minutes"
   },
   {
     name: "Levetiracetam",
@@ -1160,7 +1176,8 @@
     maxDose: 4500, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "15 minutes, may push in emergency"
   },
   {
     name: "Lidocaine 2%",
@@ -1170,7 +1187,8 @@
     maxDose: 1, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 20, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   },
   {
     name: "Lorazepam",
@@ -1180,7 +1198,8 @@
     maxDose: 4, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 2, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "2-5 minutes"
   },
   {
     name: "Mannitol",
@@ -1210,7 +1229,8 @@
     maxDose: 10, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 5, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "slow push 2-5 minutes"
   },
   {
     name: "Midazolam INTRANASAL",
@@ -1230,7 +1250,8 @@
     maxDose: 4, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 4, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "4-5 minutes"
   },
   {
     name: "Naloxone",
@@ -1240,7 +1261,8 @@
     maxDose: 0.4, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 0.4, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "over 30 seconds"
   },
   {
     name: "Naloxone FULL REVERSAL",
@@ -1250,7 +1272,8 @@
     maxDose: 2, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 0.4, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "over 30 seconds"
   },
   {
     name: "Rocuronium",
@@ -1260,7 +1283,8 @@
     maxDose: 100, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 10, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   },
   {
     name: "Sodium Bicarbonate",
@@ -1270,7 +1294,8 @@
     maxDose: 50, // Optional, in mg
     maxDoseUnit: "mEq",
     concentration: 1, // Optional, in mg/mL
-    concentrationUnit: "mEq/mL"
+    concentrationUnit: "mEq/mL",
+    infusiontime: "In Code Blue, push. Otherwise, over 5 minutes"
   },
   {
     name: "Sodium CHloride 3% (Hypertonic Saline)",
@@ -1278,7 +1303,8 @@
     doseRate: 5, // Replace with approved mg/kg/dose value
     doseUnit: "mL/kg",
     maxDose: 500, // Optional, in mg
-    maxDoseUnit: "mL"
+    maxDoseUnit: "mL",
+    infusiontime: "Typically over 10 min"
   },
   {
     name: "Succinylcholine",
@@ -1288,7 +1314,8 @@
     maxDose: 1, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 20, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   }
   ,
   {
@@ -1299,7 +1326,8 @@
     maxDose: 1, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "over 10 seconds"
   },
   {
     name: "Tranexamic Acid IV",
@@ -1309,7 +1337,8 @@
     maxDose: 1000, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "max 100mg/min"
   },
   {
     name: "Vecuronium",
@@ -1319,7 +1348,8 @@
     maxDose: 1, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 1, // Optional, in mg/mL
-    concentrationUnit: "mg/mL"
+    concentrationUnit: "mg/mL",
+    infusiontime: "rapid push"
   }
     ];
     let savedMedicationPresets = loadMedicationPresets();
