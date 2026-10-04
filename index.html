@@ -632,7 +632,28 @@
     }
 
     .preparation-field {
-      grid-column: 1 / -1;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .preparation-editor {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+    }
+
+    .preparation-editor[hidden] { display: none; }
+
+    .preparation-toggle {
+      min-height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--green);
+      border-radius: 5px;
+      color: var(--green-dark);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     .field textarea:focus {
@@ -889,6 +910,7 @@
       <details class="dose-settings">
         <summary>Regimen details</summary>
         <div class="dose-card-body">
+          <p class="high-alert-message" hidden role="note"><strong>High-alert: </strong><span class="high-alert-copy"></span></p>
           <div class="regimen-core">
             <div class="field">
               <label class="name-label">Medication / regimen name</label>
@@ -913,9 +935,12 @@
               <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
             </div>
           </div>
-          <div class="field preparation-field">
-            <label class="preparation-label">Preparation details (optional)</label>
-            <textarea class="preparation-input" maxlength="1000" placeholder="Enter preparation details from an approved reference"></textarea>
+          <div class="preparation-editor">
+            <div class="field preparation-field">
+              <label class="preparation-label">Preparation details</label>
+              <textarea class="preparation-input" maxlength="1000" placeholder="Enter preparation details from an approved reference"></textarea>
+            </div>
+            <button class="preparation-toggle" type="button" hidden>Add preparation details</button>
           </div>
           <div class="high-alert-editor">
             <div class="field high-alert-field">
@@ -924,7 +949,6 @@
             </div>
             <button class="high-alert-toggle" type="button" hidden></button>
           </div>
-          <p class="high-alert-message" hidden role="note"><strong>High-alert: </strong><span class="high-alert-copy"></span></p>
         </div>
       </details>
     </article>
@@ -1011,7 +1035,9 @@
     maxDoseUnit: "mg",
     concentration: 50, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "Over 20-60min. ONLY rapid push in pulseless VF/VT"
+    infusiontime: "Over 20-60min. ONLY rapid push in pulseless VF/VT",
+    preparationDetails: "May dilute with D5W to 2 mg/mL",
+    highAlertMessage: "ONLY administer undiluted in pulseless VF/VT"
   },
   {
     name: "Atropine",
@@ -1496,7 +1522,10 @@
       const concentrationInput = card.querySelector(".concentration-input");
       const concentrationUnitLabel = card.querySelector(".concentration-unit-label");
       const infusionTimeInput = card.querySelector(".infusion-time-input");
+      const preparationEditor = card.querySelector(".preparation-editor");
+      const preparationField = card.querySelector(".preparation-field");
       const preparationInput = card.querySelector(".preparation-input");
+      const preparationToggle = card.querySelector(".preparation-toggle");
       const highAlertInput = card.querySelector(".high-alert-input");
       const highAlertEditor = card.querySelector(".high-alert-editor");
       const highAlertField = card.querySelector(".high-alert-field");
@@ -1521,6 +1550,13 @@
         highAlertToggle.textContent = isEditing
           ? (hasMessage ? "Done" : "")
           : (hasMessage ? "Edit message" : "Add message");
+      }
+
+      function updatePreparationDetails() {
+        const hasDetails = preparationInput.value.trim().length > 0;
+        preparationField.hidden = !hasDetails;
+        preparationToggle.hidden = isPreloaded || hasDetails;
+        preparationEditor.hidden = isPreloaded && !hasDetails;
       }
 
       title.textContent = `Calculation ${calculationNumber}`;
@@ -1560,6 +1596,7 @@
         highAlertField.hidden = Boolean(preset && highAlertInput.value.trim());
       }
       updateHighAlertMessage();
+      updatePreparationDetails();
       nameInput.id = `name-${calculationNumber}`;
       doseInput.id = `dose-${calculationNumber}`;
       maxInput.id = `max-${calculationNumber}`;
@@ -1585,9 +1622,20 @@
         }
       });
       preparationInput.addEventListener("input", () => {
+        updatePreparationDetails();
         if (preset && savedMedicationPresets.includes(preset)) {
           preset.preparationDetails = preparationInput.value.trim();
           saveMedicationPresets();
+        }
+      });
+      preparationToggle.addEventListener("click", () => {
+        preparationField.hidden = false;
+        preparationToggle.hidden = true;
+        preparationInput.focus();
+      });
+      preparationEditor.addEventListener("focusout", (event) => {
+        if (!preparationEditor.contains(event.relatedTarget) && !preparationInput.value.trim()) {
+          updatePreparationDetails();
         }
       });
       highAlertEditor.addEventListener("focusout", (event) => {
