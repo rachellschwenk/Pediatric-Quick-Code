@@ -485,8 +485,18 @@
     }
 
     .medication-category {
-      color: var(--muted);
-      font-size: 11px;
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .medication-category-tag {
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--surface);
+      font-size: 10px;
       font-weight: 650;
     }
 
@@ -605,6 +615,30 @@
       color: var(--ink);
       background: var(--input-bg);
       font-size: 13px;
+    }
+
+    .field textarea {
+      width: 100%;
+      min-height: 82px;
+      padding: 9px 10px;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      color: var(--ink);
+      background: var(--input-bg);
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.45;
+      resize: vertical;
+    }
+
+    .preparation-field {
+      grid-column: 1 / -1;
+    }
+
+    .field textarea:focus {
+      border-color: var(--green);
+      outline: 3px solid var(--focus);
+      outline-offset: 1px;
     }
 
     .field input::placeholder { color: var(--input-placeholder); }
@@ -816,6 +850,10 @@
           <label for="preset-high-alert">High-alert message (optional)</label>
           <input id="preset-high-alert" name="highAlertMessage" type="text" maxlength="300" placeholder="Enter a message to display with this regimen">
         </div>
+        <div class="field preparation-field">
+          <label for="preset-preparation-details">Preparation details (optional)</label>
+          <textarea id="preset-preparation-details" name="preparationDetails" maxlength="1000" placeholder="Enter preparation details from an approved reference"></textarea>
+        </div>
         <button class="text-button" type="submit">Save preset</button>
       </form>
       <p class="library-status" id="library-status" role="status" aria-live="polite"></p>
@@ -875,6 +913,10 @@
               <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
             </div>
           </div>
+          <div class="field preparation-field">
+            <label class="preparation-label">Preparation details (optional)</label>
+            <textarea class="preparation-input" maxlength="1000" placeholder="Enter preparation details from an approved reference"></textarea>
+          </div>
           <div class="high-alert-editor">
             <div class="field high-alert-field">
               <label class="high-alert-label">High-alert message (optional)</label>
@@ -933,7 +975,7 @@
     let calculationCount = 0;
     let selectedCategory = "__all__";
 
-    // Add approved presets here: { name, categories, doseRate, doseUnit, maxDose, maxDoseUnit, concentration, concentrationUnit, infusionTime }.
+    // Add approved presets here: { name, categories, doseRate, doseUnit, maxDose, maxDoseUnit, concentration, concentrationUnit, infusionTime, preparationDetails }.
     // Unit properties change display labels only; calculations use mg/kg/dose, mg, and mg/mL.
     // infusionTime is reference text only and does not affect calculations.
     const MEDICATION_CATEGORIES = ["Cardiac", "Emergency", "Sedation", "Seizure", "Reversal"];
@@ -1122,7 +1164,7 @@
   },
   {
     name: "Lidocaine 2%",
-    categories: ["Cardiac, Emergency"],
+    categories: ["Cardiac", "Emergency"],
     doseRate: 1, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg",
     maxDose: 1, // Optional, in mg
@@ -1222,7 +1264,7 @@
   },
   {
     name: "Sodium Bicarbonate",
-    categories: ["Cardiac, Emergency"],
+    categories: ["Cardiac", "Emergency"],
     doseRate: 1, // Replace with approved mg/kg/dose value
     doseUnit: "mEq/kg",
     maxDose: 50, // Optional, in mg
@@ -1305,7 +1347,11 @@
       const categories = Array.isArray(preset.categories)
         ? preset.categories
         : (preset.category ? [preset.category] : []);
-      return [...new Set(categories.filter((category) => typeof category === "string" && category.trim()))];
+      return [...new Set(categories
+        .filter((category) => typeof category === "string")
+        .flatMap((category) => category.split(","))
+        .map((category) => category.trim())
+        .filter(Boolean))];
     }
 
     function populateCategoryOptions() {
@@ -1420,6 +1466,7 @@
       const concentrationInput = card.querySelector(".concentration-input");
       const concentrationUnitLabel = card.querySelector(".concentration-unit-label");
       const infusionTimeInput = card.querySelector(".infusion-time-input");
+      const preparationInput = card.querySelector(".preparation-input");
       const highAlertInput = card.querySelector(".high-alert-input");
       const highAlertEditor = card.querySelector(".high-alert-editor");
       const highAlertField = card.querySelector(".high-alert-field");
@@ -1449,7 +1496,12 @@
       title.textContent = `Calculation ${calculationNumber}`;
       const categories = getPresetCategories(preset || {});
       if (categories.length === 0) categories.push("Uncategorized");
-      categoryLabel.textContent = categories.join(", ");
+      categoryLabel.replaceChildren(...categories.map((category) => {
+        const tag = document.createElement("span");
+        tag.className = "medication-category-tag";
+        tag.textContent = category;
+        return tag;
+      }));
       card.dataset.categories = JSON.stringify(categories);
       if (preset) {
         nameInput.value = preset.name;
@@ -1460,13 +1512,14 @@
         concentrationInput.value = preset.concentration || "";
         concentrationUnitLabel.textContent = preset.concentrationUnit || "mg/mL";
         infusionTimeInput.value = preset.infusionTime || "";
+        preparationInput.value = preset.preparationDetails || "";
         highAlertInput.value = preset.highAlertMessage || "";
         title.textContent = preset.name;
       }
       if (isPreloaded) {
         card.classList.add("is-preloaded");
         doseSettings.open = false;
-        [nameInput, doseInput, maxInput, concentrationInput, infusionTimeInput, highAlertInput].forEach((input) => {
+        [nameInput, doseInput, maxInput, concentrationInput, infusionTimeInput, preparationInput, highAlertInput].forEach((input) => {
           input.readOnly = true;
         });
         highAlertField.hidden = true;
@@ -1481,11 +1534,13 @@
       doseInput.id = `dose-${calculationNumber}`;
       maxInput.id = `max-${calculationNumber}`;
       concentrationInput.id = `concentration-${calculationNumber}`;
+      preparationInput.id = `preparation-${calculationNumber}`;
       highAlertInput.id = `high-alert-${calculationNumber}`;
       card.querySelector(".name-label").htmlFor = nameInput.id;
       card.querySelector(".dose-label").htmlFor = doseInput.id;
       card.querySelector(".max-label").htmlFor = maxInput.id;
       card.querySelector(".concentration-label").htmlFor = concentrationInput.id;
+      card.querySelector(".preparation-label").htmlFor = preparationInput.id;
       card.querySelector(".high-alert-label").htmlFor = highAlertInput.id;
 
       nameInput.addEventListener("input", () => {
@@ -1496,6 +1551,12 @@
         updateHighAlertMessage();
         if (preset && savedMedicationPresets.includes(preset)) {
           preset.highAlertMessage = highAlertInput.value.trim();
+          saveMedicationPresets();
+        }
+      });
+      preparationInput.addEventListener("input", () => {
+        if (preset && savedMedicationPresets.includes(preset)) {
+          preset.preparationDetails = preparationInput.value.trim();
           saveMedicationPresets();
         }
       });
@@ -1559,7 +1620,8 @@
         maxDose: maxDose ? Number(maxDose) : "",
         concentration: concentration ? Number(concentration) : "",
         infusionTime: formData.get("infusionTime").trim(),
-        highAlertMessage: formData.get("highAlertMessage").trim()
+        highAlertMessage: formData.get("highAlertMessage").trim(),
+        preparationDetails: formData.get("preparationDetails").trim()
       };
       savedMedicationPresets.push(preset);
       saveMedicationPresets();
