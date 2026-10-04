@@ -224,9 +224,53 @@
 
     .dose-list { display: grid; gap: 13px; }
 
+    .category-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .category-toolbar-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .category-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .category-filter button {
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid #d2dad4;
+      border-radius: 18px;
+      color: #46534d;
+      background: var(--surface);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .category-filter button[aria-pressed="true"] {
+      border-color: var(--green);
+      color: #fff;
+      background: var(--green);
+    }
+
+    .category-filter button:hover:not([aria-pressed="true"]) {
+      border-color: var(--green);
+      background: var(--mint);
+    }
+
     .library-form {
       display: grid;
-      grid-template-columns: minmax(150px, 1.5fr) repeat(3, minmax(120px, 1fr)) auto;
+      grid-template-columns: minmax(150px, 1.5fr) repeat(4, minmax(0, 1fr)) auto;
       align-items: end;
       gap: 12px;
       padding: 18px 0;
@@ -236,22 +280,45 @@
 
     .library-form[hidden] { display: none; }
 
-    .library-list { display: grid; }
-
-    .library-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 13px 2px;
-      border-bottom: 1px solid var(--line);
+    .category-field {
+      grid-column: 1 / -1;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
     }
 
-    .library-name { font-size: 13px; font-weight: 750; }
-    .library-details { margin-top: 4px; color: var(--muted); font-size: 11px; }
-    .library-actions { display: flex; align-items: center; gap: 7px; }
+    .category-field legend {
+      margin-bottom: 7px;
+      color: #46534d;
+      font-size: 11px;
+      font-weight: 700;
+    }
 
-    .empty-library, .library-status {
+    .category-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+
+    .field .category-choice {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 550;
+    }
+
+    .category-choice input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--green);
+    }
+
+    .library-status {
       margin: 0;
       padding: 13px 0;
       color: var(--muted);
@@ -269,6 +336,12 @@
       animation: enter 240ms ease-out both;
     }
 
+    .dose-card.is-preloaded .field input[readonly] {
+      color: #53615a;
+      background: #f3f6f3;
+      cursor: default;
+    }
+
     .dose-card-header {
       display: flex;
       align-items: center;
@@ -280,9 +353,28 @@
     }
 
     .dose-card-header h3 {
+      min-width: 0;
       margin: 0;
-      font-size: 14px;
-      font-weight: 750;
+      color: var(--green-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .dose-card-title {
+      display: flex;
+      min-width: 0;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+    }
+
+    .medication-category {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
     }
 
     .remove-button {
@@ -390,14 +482,25 @@
       main { padding-top: 38px; }
       .weight-panel { grid-template-columns: 1fr; gap: 15px; padding: 19px; }
       .dose-card-body { grid-template-columns: 1fr; gap: 13px; }
-      .section-heading { align-items: center; }
+      .section-heading { align-items: flex-start; flex-wrap: wrap; }
+      .section-heading > div { min-width: 0; flex: 1 1 190px; }
       .section-heading h2 { font-size: 21px; }
       .section-heading p { max-width: 260px; line-height: 1.4; }
-      .text-button { min-height: 38px; padding: 0 10px; }
+      .text-button { min-height: 44px; padding: 0 10px; }
+      .category-toolbar { align-items: flex-start; flex-direction: column; gap: 8px; }
       .library-form { grid-template-columns: 1fr 1fr; }
       .library-form .field:first-child { grid-column: 1 / -1; }
       .library-form button { grid-column: 1 / -1; }
-      .library-row { align-items: flex-start; }
+    }
+
+    @media (max-width: 420px) {
+      .topbar { gap: 10px; padding-right: 16px; padding-left: 16px; }
+      .tool-label { font-size: 11px; }
+      main { width: min(100% - 32px, 960px); }
+      .library-form { grid-template-columns: 1fr; }
+      .library-form .field:first-child,
+      .library-form button { grid-column: auto; }
+      .result { gap: 8px; padding-right: 12px; padding-left: 12px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -432,11 +535,16 @@
       </div>
     </section>
 
+    <div class="category-toolbar" aria-label="Filter medications by category">
+      <span class="category-toolbar-label">Filter by category</span>
+      <div class="category-filter" id="category-filter" role="group" aria-label="Medication categories"></div>
+    </div>
+
     <section aria-labelledby="dosage-heading">
       <div class="section-heading">
         <div>
           <h2 id="dosage-heading">Dosage calculations</h2>
-          <p>Add each medication or regimen to calculate.</p>
+          <p>Preloaded regimens appear here automatically.</p>
         </div>
         <button class="text-button" id="add-dose" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -446,15 +554,15 @@
       <div class="dose-list" id="dose-list" aria-live="polite"></div>
     </section>
 
-    <section aria-labelledby="library-heading">
+    <section aria-labelledby="user-medication-heading">
       <div class="section-heading">
         <div>
-          <h2 id="library-heading">Preloaded medications</h2>
-          <p>Use code-provided regimens or save approved regimens in this browser.</p>
+          <h2 id="user-medication-heading">Add your own medication</h2>
+          <p>Save an approved regimen in this browser for quick reuse.</p>
         </div>
         <button class="text-button" id="toggle-preset-form" type="button" aria-expanded="false" aria-controls="preset-form">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          Add preset
+          Add medication
         </button>
       </div>
       <form class="library-form" id="preset-form" hidden>
@@ -462,12 +570,16 @@
           <label for="preset-name">Medication / regimen name</label>
           <input id="preset-name" name="name" type="text" maxlength="60" placeholder="Medication name" required>
         </div>
+        <fieldset class="field category-field" aria-labelledby="preset-category-label">
+          <legend id="preset-category-label">Categories</legend>
+          <div class="category-options" id="preset-category"></div>
+        </fieldset>
         <div class="field">
           <label for="preset-dose">Dose (mg/kg/dose)</label>
           <input id="preset-dose" name="doseRate" type="number" min="0.000001" step="any" inputmode="decimal" required>
         </div>
         <div class="field">
-          <label for="preset-max">Max (mg, optional)</label>
+          <label for="preset-max">Max (mg)</label>
           <input id="preset-max" name="maxDose" type="number" min="0.000001" step="any" inputmode="decimal">
         </div>
         <div class="field">
@@ -476,21 +588,22 @@
         </div>
         <button class="text-button" type="submit">Save preset</button>
       </form>
-      <p class="empty-library" id="empty-library">No presets saved. Add regimens from your approved clinical reference.</p>
-      <div class="library-list" id="library-list"></div>
       <p class="library-status" id="library-status" role="status" aria-live="polite"></p>
     </section>
 
     <aside class="notice" aria-label="Clinical safety notice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg>
-      <p>For calculation support only. Enter doses and maximums from an approved clinical reference; this tool does not recommend or verify a medication regimen. Independently confirm the result, units, concentration, and patient-specific factors before administration.</p>
+      <p>For calculation support only. Enter doses and maximums from an approved clinical reference; this tool does not recommend or verify a medication regimen. Dose, maximum, and concentration labels are display-only; calculations use mg/kg/dose, mg, and mg/mL respectively. Independently confirm the result, units, concentration, and patient-specific factors before administration.</p>
     </aside>
   </main>
 
   <template id="dose-template">
     <article class="dose-card">
       <header class="dose-card-header">
-        <h3>Calculation</h3>
+        <div class="dose-card-title">
+          <h3>Calculation</h3>
+          <span class="medication-category"></span>
+        </div>
         <button class="remove-button" type="button" aria-label="Remove calculation" title="Remove calculation">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"/></svg>
         </button>
@@ -501,21 +614,21 @@
           <input class="name-input" type="text" maxlength="60" placeholder="e.g. Medication A">
         </div>
         <div class="field">
-          <label class="dose-label">Dose per administration (mg/kg/dose)</label>
+          <label class="dose-label">Dose per administration (<span class="dose-unit-label">mg/kg/dose</span>)</label>
           <input class="dose-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 10">
         </div>
         <div class="field">
-          <label class="max-label">Maximum per dose (mg, optional)</label>
+          <label class="max-label">Maximum per dose (<span class="max-dose-unit-label">mg</span>)</label>
           <input class="max-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="No maximum">
         </div>
         <div class="field">
-          <label class="concentration-label">Concentration (mg/mL, optional)</label>
+          <label class="concentration-label">Concentration (<span class="concentration-unit-label">mg/mL</span>)</label>
           <input class="concentration-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 20">
         </div>
       </div>
       <div class="result" aria-live="polite">
         <div class="result-item">
-          <span class="result-label">Calculated amount per dose</span>
+          <span class="result-label">Calculated amount per dose (mg)</span>
           <div class="amount-result result-value empty-result">Enter weight and dose</div>
         </div>
         <div class="result-item">
@@ -531,18 +644,94 @@
     const doseList = document.querySelector("#dose-list");
     const doseTemplate = document.querySelector("#dose-template");
     const presetForm = document.querySelector("#preset-form");
-    const presetList = document.querySelector("#library-list");
     const presetStatus = document.querySelector("#library-status");
+    const categoryFilter = document.querySelector("#category-filter");
+    const presetCategory = document.querySelector("#preset-category");
     let calculationCount = 0;
+    let selectedCategory = "__all__";
 
-    // Add approved presets here: { name, doseRate, maxDose, concentration }.
-    // doseRate is mg/kg/dose; maxDose is mg; concentration is mg/mL.
+    // Add approved presets here: { name, categories, doseRate, doseUnit, maxDose, maxDoseUnit, concentration, concentrationUnit }.
+    // Unit properties change display labels only; calculations use mg/kg/dose, mg, and mg/mL.
+    const MEDICATION_CATEGORIES = ["Cardiac", "Emergency", "Sedation", "Seizure", "Reversal"];
     const PRELOADED_MEDICATIONS = [
         {
     name: "Adenosine",
+    categories: ["Cardiac"],
     doseRate: 0.1, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
     maxDose: 6, // Optional, in mg
-    concentration: 3 // Optional, in mg/mL
+    maxDoseUnit: "mg",
+    concentration: 3, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Adenosine REPEAT DOSE",
+    categories: ["Cardiac"],
+    doseRate: 0.2, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
+    maxDose:12, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 3, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Amiodarone",
+    categories: ["Cardiac", "Emergency"],
+    doseRate: 5, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
+    maxDose: 300, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 50, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Atropine",
+    categories: ["Cardiac", "Emergency", "Sedation"],
+    doseRate: 0.02, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
+    maxDose: 0.5, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 0.4, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Calcium Chloride",
+    categories: ["Cardiac", "Emergency"],
+    doseRate: 20, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
+    maxDose: 2000, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 100, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Calcium Gluconate",
+    categories: ["Cardiac", "Emergency"],
+    doseRate: 50, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
+    maxDose: 2000, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 100, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Cisatracurium",
+    categories: ["Sedation"],
+    doseRate: 0.15, // Replace with approved mg/kg/dose value
+    doseUnit: "mg/kg/dose",
+    maxDoseUnit: "mg",
+    concentration: 2, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
+  },
+  {
+    name: "Dextrose",
+    categories: ["Emergency"],
+    doseRate: 5, // Replace with approved mg/kg/dose value
+    doseUnit: "ml/kg",
+    maxDose: 250, // Optional, in mg
+    maxDoseUnit: "mg",
+    concentration: 10, // Optional, in mg/mL
+    concentrationUnit: "mg/mL"
   }
     ];
     let savedMedicationPresets = loadMedicationPresets();
@@ -566,58 +755,62 @@
       }
     }
 
-    function renderMedicationPresets() {
-      presetList.replaceChildren();
-      const presets = [
-        ...PRELOADED_MEDICATIONS.map((preset) => ({ preset, removable: false })),
-        ...savedMedicationPresets.map((preset, index) => ({ preset, index, removable: true }))
-      ];
-      document.querySelector("#empty-library").hidden = presets.length > 0;
+    function getPresetCategories(preset) {
+      const categories = Array.isArray(preset.categories)
+        ? preset.categories
+        : (preset.category ? [preset.category] : []);
+      return [...new Set(categories.filter((category) => typeof category === "string" && category.trim()))];
+    }
 
-      presets.forEach(({ preset, index, removable }) => {
-        const row = document.createElement("div");
-        row.className = "library-row";
-        const details = document.createElement("div");
-        const name = document.createElement("div");
-        name.className = "library-name";
-        name.textContent = preset.name;
-        const regimen = document.createElement("div");
-        regimen.className = "library-details";
-        const parts = [`${preset.doseRate} mg/kg/dose`];
-        if (preset.maxDose) parts.push(`max ${preset.maxDose} mg`);
-        if (preset.concentration) parts.push(`${preset.concentration} mg/mL`);
-        regimen.textContent = parts.join(" · ");
-        details.append(name, regimen);
+    function populateCategoryOptions() {
+      const categories = [...new Set([
+        ...MEDICATION_CATEGORIES,
+        ...PRELOADED_MEDICATIONS.flatMap(getPresetCategories),
+        ...savedMedicationPresets.flatMap(getPresetCategories)
+      ])].sort((left, right) => left.localeCompare(right));
 
-        const actions = document.createElement("div");
-        actions.className = "library-actions";
-        const useButton = document.createElement("button");
-        useButton.type = "button";
-        useButton.className = "text-button";
-        useButton.textContent = "Use";
-        useButton.addEventListener("click", () => addCalculation(preset));
-        actions.append(useButton);
-        if (removable) {
-          const removeButton = document.createElement("button");
-          removeButton.type = "button";
-          removeButton.className = "remove-button";
-          removeButton.setAttribute("aria-label", `Remove ${preset.name} preset`);
-          removeButton.title = "Remove preset";
-          removeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"/></svg>';
-          removeButton.addEventListener("click", () => {
-            savedMedicationPresets.splice(index, 1);
-            saveMedicationPresets();
-            renderMedicationPresets();
-          });
-          actions.append(removeButton);
-        }
-        row.append(details, actions);
-        presetList.append(row);
+      const selectedCategories = new Set(
+        [...presetCategory.querySelectorAll("input:checked")].map((input) => input.value)
+      );
+      presetCategory.replaceChildren();
+      categories.forEach((category) => {
+        const label = document.createElement("label");
+        label.className = "category-choice";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = "category";
+        checkbox.value = category;
+        checkbox.checked = selectedCategories.has(category);
+        label.append(checkbox, document.createTextNode(category));
+        presetCategory.append(label);
+      });
+      const filterOptions = [["All categories", "__all__"], ...categories.map((category) => [category, category])];
+      if (!filterOptions.some(([, value]) => value === selectedCategory)) selectedCategory = "__all__";
+      categoryFilter.replaceChildren();
+      filterOptions.forEach(([label, value]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.dataset.category = value;
+        button.setAttribute("aria-pressed", String(value === selectedCategory));
+        button.addEventListener("click", () => applyCategoryFilter(value));
+        categoryFilter.append(button);
+      });
+    }
+
+    function applyCategoryFilter(category = selectedCategory) {
+      selectedCategory = category;
+      categoryFilter.querySelectorAll("button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.category === selectedCategory));
+      });
+      doseList.querySelectorAll(".dose-card").forEach((card) => {
+        const categories = JSON.parse(card.dataset.categories || "[]");
+        card.hidden = selectedCategory !== "__all__" && !categories.includes(selectedCategory);
       });
     }
 
     function formatAmount(value) {
-      return Number(value.toPrecision(6)).toString();
+      return Number(value.toFixed(2)).toString();
     }
 
     function updateCalculation(card) {
@@ -652,22 +845,41 @@
       volumeResult.classList.toggle("empty-result", amount === null || concentration <= 0);
     }
 
-    function addCalculation(preset = null) {
+    function addCalculation(preset = null, isPreloaded = false) {
       const calculationNumber = ++calculationCount;
       const card = doseTemplate.content.firstElementChild.cloneNode(true);
       const title = card.querySelector("h3");
+      const categoryLabel = card.querySelector(".medication-category");
       const nameInput = card.querySelector(".name-input");
       const doseInput = card.querySelector(".dose-input");
+      const doseUnitLabel = card.querySelector(".dose-unit-label");
       const maxInput = card.querySelector(".max-input");
+      const maxDoseUnitLabel = card.querySelector(".max-dose-unit-label");
       const concentrationInput = card.querySelector(".concentration-input");
+      const concentrationUnitLabel = card.querySelector(".concentration-unit-label");
+      const removeButton = card.querySelector(".remove-button");
 
       title.textContent = `Calculation ${calculationNumber}`;
+      const categories = getPresetCategories(preset || {});
+      if (categories.length === 0) categories.push("Uncategorized");
+      categoryLabel.textContent = categories.join(", ");
+      card.dataset.categories = JSON.stringify(categories);
       if (preset) {
         nameInput.value = preset.name;
         doseInput.value = preset.doseRate;
+        doseUnitLabel.textContent = preset.doseUnit || "mg/kg/dose";
         maxInput.value = preset.maxDose || "";
+        maxDoseUnitLabel.textContent = preset.maxDoseUnit || "mg";
         concentrationInput.value = preset.concentration || "";
+        concentrationUnitLabel.textContent = preset.concentrationUnit || "mg/mL";
         title.textContent = preset.name;
+      }
+      if (isPreloaded) {
+        card.classList.add("is-preloaded");
+        [nameInput, doseInput, maxInput, concentrationInput].forEach((input) => {
+          input.readOnly = true;
+        });
+        removeButton.remove();
       }
       nameInput.id = `name-${calculationNumber}`;
       doseInput.id = `dose-${calculationNumber}`;
@@ -682,7 +894,9 @@
         title.textContent = nameInput.value.trim() || `Calculation ${calculationNumber}`;
       });
       card.addEventListener("input", () => updateCalculation(card));
-      card.querySelector(".remove-button").addEventListener("click", () => card.remove());
+      if (!isPreloaded) {
+        removeButton.addEventListener("click", () => card.remove());
+      }
       doseList.append(card);
       updateCalculation(card);
       return card;
@@ -691,7 +905,10 @@
     weightInput.addEventListener("input", () => {
       doseList.querySelectorAll(".dose-card").forEach(updateCalculation);
     });
-    document.querySelector("#add-dose").addEventListener("click", () => addCalculation());
+    document.querySelector("#add-dose").addEventListener("click", () => {
+      applyCategoryFilter("__all__");
+      addCalculation();
+    });
     document.querySelector("#toggle-preset-form").addEventListener("click", (event) => {
       presetForm.hidden = !presetForm.hidden;
       event.currentTarget.setAttribute("aria-expanded", String(!presetForm.hidden));
@@ -700,22 +917,43 @@
     presetForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const formData = new FormData(presetForm);
+      const categories = formData.getAll("category");
+      if (categories.length === 0) {
+        presetStatus.textContent = "Select at least one category.";
+        return;
+      }
       const maxDose = formData.get("maxDose");
       const concentration = formData.get("concentration");
-      savedMedicationPresets.push({
+      const preset = {
         name: formData.get("name").trim(),
+        categories,
         doseRate: Number(formData.get("doseRate")),
         maxDose: maxDose ? Number(maxDose) : "",
         concentration: concentration ? Number(concentration) : ""
-      });
+      };
+      savedMedicationPresets.push(preset);
       saveMedicationPresets();
-      renderMedicationPresets();
+      populateCategoryOptions();
+      addCalculation(preset);
+      applyCategoryFilter("__all__");
       presetForm.reset();
       presetForm.hidden = true;
       document.querySelector("#toggle-preset-form").setAttribute("aria-expanded", "false");
     });
-    addCalculation();
-    renderMedicationPresets();
+    populateCategoryOptions();
+    PRELOADED_MEDICATIONS.forEach((preset) => addCalculation(preset, true));
+    savedMedicationPresets.forEach((preset) => addCalculation(preset));
+    if (PRELOADED_MEDICATIONS.length === 0 && savedMedicationPresets.length === 0) {
+      addCalculation();
+    }
+  </script>
+</body>
+</html>    });
+    PRELOADED_MEDICATIONS.forEach((preset) => addCalculation(preset, true));
+    savedMedicationPresets.forEach((preset) => addCalculation(preset));
+    if (PRELOADED_MEDICATIONS.length === 0 && savedMedicationPresets.length === 0) {
+      addCalculation();
+    }
   </script>
 </body>
 </html>
