@@ -75,6 +75,41 @@
       --alert-border: #a52b24;
     }
 
+    :root[data-medieval="true"] {
+      color-scheme: light;
+      --paper: #c9b98f;
+      --surface: #e8d8ad;
+      --ink: #30251b;
+      --muted: #5b4932;
+      --line: #8e7049;
+      --green: #5c4225;
+      --green-dark: #412b19;
+      --mint: #d4c092;
+      --coral: #7d2421;
+      --coral-pale: #ead0b3;
+      --gold: #745018;
+      --shadow: 0 4px 12px rgb(62 39 17 / 22%);
+      --input-bg: #f2e6c8;
+      --input-border: #80643f;
+      --input-placeholder: #746044;
+      --readonly-bg: #dfd0aa;
+      --readonly-ink: #5c4b32;
+      --accent-ink: #f5e8c8;
+      --focus: #a25c25;
+      --additional-bg: #ddc99c;
+      --result-bg: #d7c599;
+      --result-border: #876535;
+      --result-detail: #493a27;
+      --notice-ink: #392b19;
+      --notice-bg: #f0dfb5;
+      --notice-border: #8c6732;
+      --alert-ink: #571b18;
+      --alert-bg: #f1d3c0;
+      --alert-border: #8f2d25;
+      --sword-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M23 2 27 6 13 22 9 18Z' fill='%23e8e0ca' stroke='%2330251b' stroke-width='1.5'/%3E%3Cpath d='m9 17 6 6-3 3-6-6Z' fill='%23a67b35' stroke='%2330251b' stroke-width='1.5'/%3E%3Cpath d='m4 25 3 3-4 2Z' fill='%2330251b'/%3E%3Cpath d='m21 4 4 4' stroke='%23fff4d7' stroke-width='1.4'/%3E%3C/svg%3E") 4 2, auto;
+      font-family: "Old English Text MT", "UnifrakturCook", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
     * { box-sizing: border-box; }
 
     body {
@@ -84,6 +119,42 @@
       color: var(--ink);
       background-color: var(--paper);
     }
+
+    :root[data-medieval="true"] body {
+      background-image:
+        radial-gradient(ellipse at 18% 12%, rgb(255 247 218 / 52%), transparent 52%),
+        radial-gradient(ellipse at 82% 78%, rgb(117 75 32 / 13%), transparent 54%),
+        repeating-linear-gradient(2deg, transparent 0 5px, rgb(104 75 39 / 4%) 6px 7px);
+    }
+
+    :root[data-medieval="true"] h1,
+    :root[data-medieval="true"] h2,
+    :root[data-medieval="true"] .dose-card-header h3 {
+      font-family: "Old English Text MT", "UnifrakturCook", "Palatino Linotype", Georgia, serif;
+      letter-spacing: 0.02em;
+    }
+
+    :root[data-medieval="true"] .topbar,
+    :root[data-medieval="true"] .dose-card,
+    :root[data-medieval="true"] .weight-panel {
+      border-color: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    :root[data-medieval="true"] .brand-mark,
+    :root[data-medieval="true"] .category-filter button[aria-pressed="true"] {
+      color: var(--accent-ink);
+      background: var(--green);
+    }
+
+    :root[data-medieval="true"] body,
+    :root[data-medieval="true"] button {
+      cursor: var(--sword-cursor);
+    }
+
+    :root[data-medieval="true"] input,
+    :root[data-medieval="true"] textarea { cursor: text; }
+    :root[data-medieval="true"] .dose-settings summary { cursor: var(--sword-cursor); }
 
     button, input { font: inherit; }
     button { cursor: pointer; }
@@ -340,6 +411,20 @@
     }
 
     .theme-toggle:hover { background: var(--mint); }
+
+    .medieval-toggle {
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      color: var(--ink);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .medieval-toggle:hover { background: var(--mint); }
 
     .dose-list { display: grid; gap: 13px; }
 
@@ -797,10 +882,11 @@
     }
 
     @media (max-width: 420px) {
-      .topbar { gap: 10px; padding-right: 16px; padding-left: 16px; }
+      .topbar { flex-wrap: wrap; gap: 8px 10px; padding: 8px 16px; }
       .topbar-actions { gap: 8px; }
+      .topbar-actions { flex: 1 1 100%; justify-content: flex-end; }
       .tool-label { display: none; }
-      .theme-toggle { min-height: 34px; padding: 0 8px; font-size: 11px; }
+      .theme-toggle, .medieval-toggle { min-height: 34px; padding: 0 8px; font-size: 11px; }
       .brand-seal { display: none; }
       main { width: min(100% - 32px, 960px); }
       .library-form { grid-template-columns: 1fr; }
@@ -839,6 +925,7 @@
     <div class="topbar-actions">
       <span class="tool-label">Dosage calculator</span>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light theme">Light theme</button>
+      <button class="medieval-toggle" id="medieval-toggle" type="button" role="switch" aria-checked="false">Medieval mode: Off</button>
     </div>
   </header>
 
@@ -1007,7 +1094,16 @@
 
   <script>
     const themeToggle = document.querySelector("#theme-toggle");
+    const medievalToggle = document.querySelector("#medieval-toggle");
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+    function updateThemeColor() {
+      if (document.documentElement.dataset.medieval === "true") {
+        themeColorMeta.content = "#c9b98f";
+      } else {
+        themeColorMeta.content = document.documentElement.dataset.theme === "dark" ? "#101820" : "#eef2f4";
+      }
+    }
 
     function setTheme(theme, persist = false) {
       const activeTheme = theme === "light" ? "light" : "dark";
@@ -1015,7 +1111,7 @@
       const nextTheme = activeTheme === "dark" ? "light" : "dark";
       themeToggle.textContent = `${nextTheme === "light" ? "Light" : "Dark"} theme`;
       themeToggle.setAttribute("aria-label", `Switch to ${nextTheme} theme`);
-      themeColorMeta.content = activeTheme === "dark" ? "#101820" : "#eef2f4";
+      updateThemeColor();
       if (persist) {
         try {
           localStorage.setItem("pediatricQuickCode.theme", activeTheme);
@@ -1036,6 +1132,31 @@
     themeToggle.addEventListener("click", () => {
       const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       setTheme(nextTheme, true);
+    });
+
+    function setMedievalMode(enabled, persist = false) {
+      document.documentElement.dataset.medieval = String(enabled);
+      medievalToggle.setAttribute("aria-checked", String(enabled));
+      medievalToggle.textContent = `Medieval mode: ${enabled ? "On" : "Off"}`;
+      updateThemeColor();
+      if (persist) {
+        try {
+          localStorage.setItem("pediatricQuickCode.medievalMode", String(enabled));
+        } catch (error) {
+          console.warn("Medieval mode preference could not be saved.", error);
+        }
+      }
+    }
+
+    let savedMedievalMode = false;
+    try {
+      savedMedievalMode = localStorage.getItem("pediatricQuickCode.medievalMode") === "true";
+    } catch (error) {
+      console.warn("Medieval mode preference could not be loaded.", error);
+    }
+    setMedievalMode(savedMedievalMode);
+    medievalToggle.addEventListener("click", () => {
+      setMedievalMode(document.documentElement.dataset.medieval !== "true", true);
     });
 
     const weightInput = document.querySelector("#weight");
