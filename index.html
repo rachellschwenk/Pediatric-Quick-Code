@@ -1099,39 +1099,43 @@
     maxDoseUnit: "mg",
     concentration: 0.4, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "rapid push"
+    infusiontime: "rapid push",
+    preparationdetails: "Child max TOTAL dose = 1mg. Adolescent max TOTAL dose = 2mg. May repeat dose once"
   },
   {
     name: "Calcium Chloride",
     categories: ["Cardiac", "Emergency"],
     doseRate: 20, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg/dose",
-    maxDose: 2000, // Optional, in mg
+    maxDose: 1000, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "5-10 minutes. Do not exceed 100mg/min except in emergencies."
+    infusiontime: "5-10 minutes. Do not exceed 100mg/min except in emergencies.",
+    highalertmessage: "Preferred for Central Access."
   },
   {
     name: "Calcium Gluconate",
     categories: ["Cardiac", "Emergency"],
     doseRate: 50, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg/dose",
-    maxDose: 2000, // Optional, in mg
+    maxDose: 1000, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "5-10 minutes. Do not exceed 100mg/min except in emergencies."
+    infusiontime: "5-10 minutes. Do not exceed 100mg/min except in emergencies.",
+    highalertmessage: "Dilute to 20mg/mL. Preferred for Peripheral Access.",
+    preparationdetails: "Dilute to 20mg/mL with D5W or NS"
   },
   {
     name: "Cisatracurium",
     categories: ["Sedation"],
     doseRate: 0.15, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg/dose",
-    maxDoseUnit: "mg",
     concentration: 2, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "rapid push"
+    infusiontime: "rapid push",
+    highAlertMessage: "Preferred when Sugammadex used in last 24 hours"
   },
   {
     name: "Dextrose",
@@ -1164,7 +1168,8 @@
     maxDoseUnit: "mg",
     concentration: 0.1, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "rapid push"
+    infusiontime: "rapid push",
+    highAlertMessage: "Use full vial for >70kg"
   },
   {
     name: "Epinephrine ETT",
@@ -1176,7 +1181,7 @@
     concentration: 1, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
     infusiontime: "rapid push",
-    highAlertMessage: "ONLY for use in CPR"
+    highAlertMessage: "ONLY for use in CPR. Use high-concentration epinephrine"
   },
   {
     name: "Epinephrine Peri-arrest",
@@ -1187,7 +1192,8 @@
     maxDoseUnit: "mcg",
     concentration: 10, // Optional, in mg/mL
     concentrationUnit: "mcg/mL",
-    infusiontime: "rapid push"
+    infusiontime: "rapid push",
+    highAlertMessage: "Use full vial for >70kg"
   },
   {
     name: "Etomidate",
@@ -1210,7 +1216,8 @@
     maxDoseUnit: "mcg",
     concentration: 50, // Optional, in mg/mL
     concentrationUnit: "mcg/mL",
-    infusiontime: "slow push over 3-5 minutes"
+    infusiontime: "slow push over 3-5 minutes",
+    highAlertMessage: "May give same dose Intranasally"
   },
   {
     name: "Flumazenil",
@@ -1221,7 +1228,8 @@
     maxDoseUnit: "mg",
     concentration: 0.1, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "15-30 seconds"
+    infusiontime: "15-30 seconds",
+    highAlertMessage: "Max TOTAL dose = 1mg if repeat doses necessary"
   },
   {
     name: "Fosphenytin",
@@ -1232,7 +1240,9 @@
     maxDoseUnit: "mgPE",
     concentration: 50, // Optional, in mg/mL
     concentrationUnit: "mgPE/mL",
-    infusiontime: "10-30 minutes"
+    infusiontime: "10-30 minutes",
+    highAlertMessage: "Must dilute. Not recommended in < 2 months. Phenobarbital 20mg/kg alternative.",
+    Infusiondetails: "Dilute to 10mgPE/mL in D5W or NS"
   },
   {
     name: "Ketamine",
@@ -1243,7 +1253,8 @@
     maxDoseUnit: "mg",
     concentration: 10, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "slow push 1-3 minutes"
+    infusiontime: "slow push 1-3 minutes",
+    highalertmessage: "Do not use in <3 months."
   },
   {
     name: "Levetiracetam",
@@ -1261,7 +1272,7 @@
     categories: ["Cardiac", "Emergency"],
     doseRate: 1, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg",
-    maxDose: 1, // Optional, in mg
+    maxDose: 100,
     maxDoseUnit: "mg",
     concentration: 20, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
@@ -1269,34 +1280,33 @@
   },
   {
     name: "Lorazepam",
-    categories: ["Emergency"],
+    categories: ["Seizure"],
     doseRate: 0.1, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg",
     maxDose: 4, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 2, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "2-5 minutes"
+    infusiontime: "2-5 minutes",
+    preparationDetails: "May use same dose for Intranasal"
   },
   {
     name: "Mannitol",
     categories: ["Emergency"],
     doseRate: 0.5, // Replace with approved mg/kg/dose value
     doseUnit: "g/kg",
-    maxDose: 1, // Optional, in mg
-    maxDoseUnit: "mg",
     concentration: 0.2, // Optional, in mg/mL
-    concentrationUnit: "g/mL (20%)"
+    concentrationUnit: "g/mL (20%)",
+    highAlertMessage: "MUST use filter"
   },
   {
     name: "Mannitol MAX DOSE",
     categories: ["Emergency"],
     doseRate: 1, // Replace with approved mg/kg/dose value
     doseUnit: "g/kg",
-    maxDose: 1, // Optional, in mg
-    maxDoseUnit: "mg",
     concentration: 0.2, // Optional, in mg/mL
-    concentrationUnit: "g/mL (20%)"
+    concentrationUnit: "g/mL (20%)",
+    highAlertMessage: "MUST use filter"
   },
   {
     name: "Midazolam",
@@ -1372,10 +1382,11 @@
     maxDoseUnit: "mEq",
     concentration: 1, // Optional, in mg/mL
     concentrationUnit: "mEq/mL",
-    infusiontime: "In Code Blue, push. Otherwise, over 5 minutes"
+    infusiontime: "In Code Blue, push. Otherwise, over 5 minutes",
+    highAlertMessage: "Dilute doses 1:1 with SWFI or D5W"
   },
   {
-    name: "Sodium CHloride 3% (Hypertonic Saline)",
+    name: "Sodium Chloride 3% (Hypertonic Saline)",
     categories: ["Emergency"],
     doseRate: 5, // Replace with approved mg/kg/dose value
     doseUnit: "mL/kg",
@@ -1388,7 +1399,7 @@
     categories: ["Sedation"],
     doseRate: 1.5, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg",
-    maxDose: 1, // Optional, in mg
+    maxDose: 200, // Optional, in mg
     maxDoseUnit: "mg",
     concentration: 20, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
@@ -1400,11 +1411,10 @@
     categories: ["Reversal"],
     doseRate: 16, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg",
-    maxDose: 1, // Optional, in mg
-    maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "over 10 seconds"
+    infusiontime: "over 10 seconds",
+    highAlertMessage: "ONLY for reversal of Rocuronium or Vecuronium"
   },
   {
     name: "Tranexamic Acid IV",
@@ -1415,18 +1425,19 @@
     maxDoseUnit: "mg",
     concentration: 100, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "max 100mg/min"
+    infusiontime: "max 100mg/min",
+    preparationdetails: "Dilute to 20mg/ml with NS",
+    highAlertMessage: "For IV, must dilute. May apply undiluted topically."
   },
   {
     name: "Vecuronium",
     categories: ["Sedation"],
     doseRate: 0.1, // Replace with approved mg/kg/dose value
     doseUnit: "mg/kg",
-    maxDose: 1, // Optional, in mg
-    maxDoseUnit: "mg",
     concentration: 1, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
-    infusiontime: "rapid push"
+    infusiontime: "rapid push",
+    PreparationDetails: "Reconstitute vial with 10mL NS"
   }
     ];
     let savedMedicationPresets = loadMedicationPresets();
