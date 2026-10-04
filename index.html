@@ -126,6 +126,48 @@
 
     .brand-mark svg { width: 18px; height: 18px; }
 
+    .brand-seal {
+      position: relative;
+      display: grid;
+      width: 38px;
+      height: 42px;
+      margin-left: 1px;
+      place-items: start center;
+      color: #9f2528;
+    }
+
+    .brand-seal::before,
+    .brand-seal::after {
+      position: absolute;
+      top: 21px;
+      z-index: 0;
+      width: 12px;
+      height: 21px;
+      border: 1px solid var(--notice-border);
+      background: var(--notice-bg);
+      content: "";
+    }
+
+    .brand-seal::before {
+      left: 5px;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 40% 74%, 0 100%);
+      transform: rotate(9deg);
+    }
+
+    .brand-seal::after {
+      right: 5px;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 60% 74%, 0 100%);
+      transform: rotate(-9deg);
+    }
+
+    .brand-seal svg {
+      position: relative;
+      z-index: 1;
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 1px 2px rgb(0 0 0 / 45%));
+    }
+
     .tool-label {
       color: var(--muted);
       font-size: 12px;
@@ -759,6 +801,7 @@
       .topbar-actions { gap: 8px; }
       .tool-label { display: none; }
       .theme-toggle { min-height: 34px; padding: 0 8px; font-size: 11px; }
+      .brand-seal { display: none; }
       main { width: min(100% - 32px, 960px); }
       .library-form { grid-template-columns: 1fr; }
       .library-form .field:first-child,
@@ -784,6 +827,14 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18.5h.01M12 18.5h.01M16 18.5h.01"/></svg>
       </span>
       <span>Pediatric Quick Code</span>
+      <span class="brand-seal" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="m16 1 2.2 4.1 4.1-2.1-.1 4.6 4.6-.1-2.1 4.1 4.1 2.2-4.1 2.2 2.1 4.1-4.6-.1.1 4.6-4.1-2.1L16 29l-2.2-4.1-4.1 2.1.1-4.6-4.6.1 2.1-4.1L3.2 16l4.1-2.2-2.1-4.1 4.6.1-.1-4.6 4.1 2.1L16 1Z" fill="currentColor" stroke="var(--notice-border)" stroke-width="1"/>
+          <circle cx="16" cy="16" r="8.3" fill="currentColor" stroke="var(--notice-ink)" stroke-width="1.1"/>
+          <circle cx="16" cy="16" r="6.1" stroke="var(--notice-border)" stroke-width=".8"/>
+          <path d="M14.7 11.2h2.6v3.5h3.5v2.6h-3.5v3.5h-2.6v-3.5h-3.5v-2.6h3.5v-3.5Z" fill="var(--notice-ink)"/>
+        </svg>
+      </span>
     </div>
     <div class="topbar-actions">
       <span class="tool-label">Dosage calculator</span>
@@ -793,7 +844,7 @@
 
   <main>
     <h1>Weight-based dosage calculator</h1>
-    <p class="intro">Calculate per-dose amounts from a patient’s weight and a regimen you provide.</p>
+    <p class="intro">Calculate doses and volumes-to-draw from a patient’s weight.</p>
 
     <div class="medication-search">
       <label for="medication-search">Search medications</label>
