@@ -685,6 +685,24 @@
       font-size: 14px;
     }
 
+    .infusion-time-editor {
+      display: contents;
+    }
+
+    .infusion-time-toggle {
+      align-self: end;
+      min-height: 40px;
+      padding: 0;
+      border: 0;
+      color: var(--green-dark);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: left;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
     .high-alert-field {
       grid-column: 1 / -1;
     }
@@ -1068,9 +1086,12 @@
               <label class="max-label">Maximum per dose (<span class="max-dose-unit-label">mg</span>)</label>
               <input class="max-input" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="No maximum">
             </div>
-            <div class="field">
-              <label class="infusion-time-label">Infusion time (reference only)</label>
-              <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
+            <div class="infusion-time-editor">
+              <div class="field infusion-time-field">
+                <label class="infusion-time-label">Infusion time (reference only)</label>
+                <input class="infusion-time-input" type="text" maxlength="60" placeholder="Reference only">
+              </div>
+              <button class="infusion-time-toggle" type="button" hidden>Add infusion time</button>
             </div>
           </div>
           <div class="preparation-editor">
@@ -1705,6 +1726,8 @@
       const concentrationInput = card.querySelector(".concentration-input");
       const concentrationUnitLabel = card.querySelector(".concentration-unit-label");
       const infusionTimeInput = card.querySelector(".infusion-time-input");
+      const infusionTimeField = card.querySelector(".infusion-time-field");
+      const infusionTimeToggle = card.querySelector(".infusion-time-toggle");
       const preparationEditor = card.querySelector(".preparation-editor");
       const preparationField = card.querySelector(".preparation-field");
       const preparationInput = card.querySelector(".preparation-input");
@@ -1740,6 +1763,12 @@
         preparationField.hidden = !hasDetails;
         preparationToggle.hidden = isPreloaded || hasDetails;
         preparationEditor.hidden = isPreloaded && !hasDetails;
+      }
+
+      function updateInfusionTime() {
+        const hasInfusionTime = infusionTimeInput.value.trim().length > 0;
+        infusionTimeField.hidden = !hasInfusionTime;
+        infusionTimeToggle.hidden = isPreloaded || hasInfusionTime;
       }
 
       title.textContent = `Calculation ${calculationNumber}`;
@@ -1780,6 +1809,7 @@
       }
       updateHighAlertMessage();
       updatePreparationDetails();
+      updateInfusionTime();
       nameInput.id = `name-${calculationNumber}`;
       doseInput.id = `dose-${calculationNumber}`;
       maxInput.id = `max-${calculationNumber}`;
@@ -1802,6 +1832,22 @@
         if (preset && savedMedicationPresets.includes(preset)) {
           preset.highAlertMessage = highAlertInput.value.trim();
           saveMedicationPresets();
+        }
+      });
+      infusionTimeInput.addEventListener("input", () => {
+        if (preset && savedMedicationPresets.includes(preset)) {
+          preset.infusionTime = infusionTimeInput.value.trim();
+          saveMedicationPresets();
+        }
+      });
+      infusionTimeToggle.addEventListener("click", () => {
+        infusionTimeField.hidden = false;
+        infusionTimeToggle.hidden = true;
+        infusionTimeInput.focus();
+      });
+      infusionTimeField.addEventListener("focusout", (event) => {
+        if (!infusionTimeField.contains(event.relatedTarget) && !infusionTimeInput.value.trim()) {
+          updateInfusionTime();
         }
       });
       preparationInput.addEventListener("input", () => {
