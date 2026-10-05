@@ -161,6 +161,44 @@
     :root[data-medieval="true"] textarea { cursor: text; }
     :root[data-medieval="true"] .dose-settings summary { cursor: var(--quill-cursor); }
 
+    .medieval-rats {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .medieval-rat {
+      position: absolute;
+      left: 0;
+      width: 64px;
+      height: 44px;
+      color: #65452d;
+      animation: rat-run var(--rat-duration) linear forwards;
+    }
+
+    .medieval-rat[data-direction="left"] { animation-direction: reverse; }
+    .medieval-rat[data-direction="left"] svg { transform: scaleX(-1); }
+    .medieval-rat svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 2px 1px rgb(61 42 24 / 30%)); }
+    .medieval-rat .rat-body { transform-box: fill-box; transform-origin: center; animation: rat-bob 180ms ease-in-out infinite alternate; }
+    .medieval-rat .rat-legs { transform-box: fill-box; transform-origin: center; animation: rat-legs 140ms ease-in-out infinite alternate; }
+
+    @keyframes rat-run {
+      from { transform: translateX(-80px); }
+      to { transform: translateX(calc(100vw + 80px)); }
+    }
+
+    @keyframes rat-bob {
+      from { translate: 0 0; }
+      to { translate: 0 -2px; }
+    }
+
+    @keyframes rat-legs {
+      from { rotate: -12deg; }
+      to { rotate: 12deg; }
+    }
+
     button, input { font: inherit; }
     button { cursor: pointer; }
 
@@ -926,10 +964,12 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+      .medieval-rats { display: none; }
     }
   </style>
 </head>
 <body>
+  <div class="medieval-rats" id="medieval-rats" aria-hidden="true"></div>
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">
@@ -1121,7 +1161,9 @@
   <script>
     const themeToggle = document.querySelector("#theme-toggle");
     const medievalToggle = document.querySelector("#medieval-toggle");
+    const medievalRats = document.querySelector("#medieval-rats");
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    let medievalRatTimer = null;
 
     function updateThemeColor() {
       if (document.documentElement.dataset.medieval === "true") {
@@ -1159,6 +1201,37 @@
       const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       setTheme(nextTheme, true);
     });
+
+    function spawnMedievalRat() {
+      if (document.documentElement.dataset.medieval !== "true" ||
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const rat = document.createElement("div");
+      rat.className = "medieval-rat";
+      rat.dataset.direction = Math.random() < 0.5 ? "left" : "right";
+      rat.style.bottom = `${10 + Math.random() * 58}%`;
+      rat.style.setProperty("--rat-duration", `${4 + Math.random() * 2.5}s`);
+      rat.innerHTML = '<svg viewBox="0 0 64 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 27C8 29 7 20 2 23c-4 3 1 9 8 8 4 0 7-2 10-4" stroke="#765038" stroke-width="2" stroke-linecap="round"/><g class="rat-body"><ellipse cx="32" cy="27" rx="17" ry="10" fill="currentColor" stroke="#39291e" stroke-width="1.5"/><path d="M22 22c5-5 15-6 21-1-4 3-12 5-21 1Z" fill="#a87953" opacity=".8"/><path d="M26 31c5 3 12 3 17 0" stroke="#b58a61" stroke-width="1.4" stroke-linecap="round"/><path d="M43 24c4-8 13-8 16-2 3 5-1 11-8 11-5 0-8-3-8-9Z" fill="#765038" stroke="#39291e" stroke-width="1.5"/><circle cx="49" cy="17" r="4.2" fill="#98634f" stroke="#39291e" stroke-width="1.3"/><circle cx="50" cy="17.5" r="2.1" fill="#d9a398"/><path d="M56 26c4-3 8-1 8 1 0 2-3 3-7 2Z" fill="#bd8877" stroke="#39291e" stroke-width="1"/><circle cx="55" cy="23" r="1.3" fill="#fff0d6"/><circle cx="55.4" cy="23" r=".65" fill="#241811" stroke="none"/><circle cx="61" cy="27" r=".8" fill="#70453a" stroke="none"/><path d="M61 28.5 64 28m-3 1.5 2.6 1" stroke="#79563c" stroke-width=".65" stroke-linecap="round"/><path d="M20 26c-1 2-1 4 0 5m20-5c2 2 2 4 1 5" stroke="#d3ae7b" stroke-width="1" stroke-linecap="round"/></g><g class="rat-legs" stroke="#39291e" stroke-width="1.8" stroke-linecap="round"><path d="m22 33-2 6m5-5 1 5m12-7 3 6m2-6 4 4"/></g></svg>';
+      rat.addEventListener("animationend", () => rat.remove(), { once: true });
+      medievalRats.append(rat);
+    }
+
+    function startMedievalRats() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (medievalRatTimer !== null) return;
+      spawnMedievalRat();
+      spawnMedievalRat();
+      spawnMedievalRat();
+      medievalRatTimer = window.setInterval(spawnMedievalRat, 650);
+    }
+
+    function stopMedievalRats() {
+      if (medievalRatTimer !== null) {
+        window.clearInterval(medievalRatTimer);
+        medievalRatTimer = null;
+      }
+      medievalRats.replaceChildren();
+    }
 
     let medievalAudioContext = null;
     let medievalFanfareTimer = null;
@@ -1260,8 +1333,10 @@
       medievalToggle.textContent = `Medieval mode: ${enabled ? "On" : "Off"}`;
       updateThemeColor();
       if (enabled) {
+        startMedievalRats();
         startMedievalTrumpet();
       } else {
+        stopMedievalRats();
         stopMedievalTrumpet();
       }
       if (persist) {
