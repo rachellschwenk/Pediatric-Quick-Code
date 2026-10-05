@@ -339,28 +339,56 @@
 
     .weight-panel {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+      grid-template-columns: minmax(0, 1.1fr) minmax(220px, 340px);
       align-items: center;
-      gap: 20px;
-      padding: 19px 22px;
+      gap: 24px;
+      width: min(100%, 860px);
+      margin: 0 auto 24px;
+      padding: 28px 30px;
       border: 1px solid var(--line);
-      border-left: 4px solid var(--green);
-      border-radius: 6px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      border-left: 8px solid var(--green);
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--surface), var(--mint));
+      box-shadow: 0 0 0 1px rgb(84 200 174 / 22%), 0 18px 36px rgb(16 35 45 / 18%);
+    }
+
+    .weight-copy {
+      display: grid;
+      justify-items: start;
+      gap: 8px;
+      text-align: left;
     }
 
     .weight-copy label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-      font-weight: 750;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0;
+      color: var(--ink);
+      font-size: clamp(18px, 2vw, 26px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .weight-copy label::after {
+      padding: 3px 9px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      background: var(--notice-bg);
+      color: var(--notice-ink);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      content: "Required";
     }
 
     .weight-copy p {
       margin: 0;
-      color: var(--muted);
-      font-size: 12px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
     }
 
     .input-with-unit { position: relative; }
@@ -1060,7 +1088,7 @@
     @media (max-width: 650px) {
       main { padding-top: 32px; }
       h1 { font-size: 30px; }
-      .weight-panel { grid-template-columns: 1fr; gap: 14px; padding: 17px; }
+      .weight-panel { grid-template-columns: 1fr; gap: 16px; padding: 22px 20px; }
       .regimen-core { gap: 6px; }
       .regimen-additional { grid-template-columns: minmax(100px, 0.8fr) minmax(0, 1.4fr); }
       .section-heading { align-items: flex-start; flex-wrap: wrap; }
@@ -1159,10 +1187,10 @@
     <section class="weight-panel" aria-labelledby="weight-label">
       <div class="weight-copy">
         <label id="weight-label" for="weight">Patient weight</label>
-        <p>Enter the measured weight in kilograms.</p>
+        <p>Enter the patient’s weight in kilograms before calculating any dose.</p>
       </div>
       <div class="input-with-unit">
-        <input id="weight" type="number" min="0.01" step="any" inputmode="decimal" placeholder="e.g. 18.5" aria-describedby="weight-label">
+        <input id="weight" type="number" min="0.01" step="any" inputmode="decimal" placeholder="e.g. 18.5" aria-describedby="weight-label" aria-label="Patient weight in kilograms">
         <span class="unit" aria-hidden="true">kg</span>
       </div>
     </section>
