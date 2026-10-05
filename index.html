@@ -134,10 +134,15 @@
     }
 
     :root[data-medieval="true"] h1,
-    :root[data-medieval="true"] h2,
-    :root[data-medieval="true"] .dose-card-header h3 {
+    :root[data-medieval="true"] h2 {
       font-family: "Old English Text MT", "UnifrakturCook", "Palatino Linotype", Georgia, serif;
       letter-spacing: 0.02em;
+    }
+
+    :root[data-medieval="true"] .dose-card-header h3,
+    :root[data-medieval="true"] .result-value {
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      letter-spacing: 0.01em;
     }
 
     :root[data-medieval="true"] .topbar,
@@ -686,10 +691,11 @@
       min-width: 0;
       margin: 0;
       color: var(--green-dark);
-      font-family: inherit;
-      font-size: 24px;
-      font-weight: 750;
-      line-height: 1.15;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+      font-weight: 650;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
       overflow-wrap: anywhere;
     }
 
@@ -922,9 +928,11 @@
 
     .result-value {
       color: var(--green-dark);
-      font-size: 22px;
-      font-weight: 750;
-      line-height: 1.15;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+      font-weight: 650;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
       overflow-wrap: anywhere;
     }
 
