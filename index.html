@@ -211,6 +211,7 @@
       padding: 0 clamp(20px, 5vw, 72px);
       border-bottom: 1px solid var(--line);
       background: var(--surface);
+      box-shadow: 0 1px 0 rgb(0 0 0 / 10%);
     }
 
     .topbar-actions {
@@ -322,7 +323,8 @@
 
     h1 {
       max-width: 780px;
-      margin: 0;
+      margin: 0 auto;
+      text-align: center;
       font-size: 34px;
       font-weight: 720;
       line-height: 1.15;
@@ -331,10 +333,11 @@
 
     .intro {
       max-width: 570px;
-      margin: 10px 0 24px;
+      margin: 10px auto 24px;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.55;
+      text-align: center;
     }
 
     .weight-panel {
@@ -502,7 +505,7 @@
 
     .medication-search {
       max-width: 540px;
-      margin-top: 22px;
+      margin: 22px auto 0;
     }
 
     .medication-search label {
@@ -540,8 +543,22 @@
     .category-toolbar {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 12px;
-      margin-top: 22px;
+      max-width: 840px;
+      margin: 22px auto 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: 0 8px 18px rgb(0 0 0 / 6%);
+      text-align: center;
+    }
+
+    .medication-search {
+      max-width: 540px;
+      margin: 12px auto 0;
+      padding: 0 0 6px;
     }
 
     .category-toolbar-label {
@@ -554,6 +571,7 @@
     .category-filter {
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
       gap: 7px;
     }
 
@@ -1025,12 +1043,6 @@
     <h1>Weight-based dosage calculator</h1>
     <p class="intro">Calculate doses and volumes-to-draw from a patient’s weight.</p>
 
-    <div class="medication-search">
-      <label for="medication-search">Search medications</label>
-      <input id="medication-search" type="search" placeholder="Type a medication name" autocomplete="off">
-      <p class="medication-search-status" id="medication-search-status" aria-live="polite"></p>
-    </div>
-
     <section class="weight-panel" aria-labelledby="weight-label">
       <div class="weight-copy">
         <label id="weight-label" for="weight">Patient weight</label>
@@ -1045,6 +1057,12 @@
     <div class="category-toolbar" aria-label="Filter medications by category">
       <span class="category-toolbar-label">Filter by category</span>
       <div class="category-filter" id="category-filter" role="group" aria-label="Medication categories"></div>
+    </div>
+
+    <div class="medication-search">
+      <label for="medication-search">Search medications</label>
+      <input id="medication-search" type="search" placeholder="Type a medication name" autocomplete="off">
+      <p class="medication-search-status" id="medication-search-status" aria-live="polite"></p>
     </div>
 
     <section aria-labelledby="dosage-heading">
