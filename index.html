@@ -1156,7 +1156,10 @@
       <div class="result" aria-live="polite">
         <div class="result-item">
           <span class="result-label">Calculated amount per dose (mg)</span>
-          <div class="amount-result result-value empty-result">Enter weight and dose</div>
+          <div class="amount-result result-value empty-result">
+            <span class="amount-result-value">Enter weight and dose</span>
+            <small class="amount-rate-result"></small>
+          </div>
         </div>
         <div class="result-item">
           <span class="result-label">Volume per dose</span>
@@ -1929,6 +1932,8 @@
       const maxDoseInput = card.querySelector(".max-input").value;
       const concentration = Number(card.querySelector(".concentration-input").value);
       const amountResult = card.querySelector(".amount-result");
+      const amountValue = card.querySelector(".amount-result-value");
+      const amountRate = card.querySelector(".amount-rate-result");
       const volumeResult = card.querySelector(".volume-result");
 
       let message = "Enter weight and dose";
@@ -1944,7 +1949,8 @@
         message = `${formatAmount(amount)} mg${capped ? " (max applied)" : ""}`;
         amountResult.dataset.capped = capped ? "true" : "false";
       }
-      amountResult.textContent = message;
+      amountValue.textContent = message;
+      amountRate.textContent = amount !== null ? `(${formatAmount(doseRate)} mg/kg/dose)` : "";
       amountResult.classList.toggle("empty-result", amount === null);
 
       let volumeMessage = "Add concentration";
