@@ -111,7 +111,7 @@
       --alert-ink: #571b18;
       --alert-bg: #f1d3c0;
       --alert-border: #8f2d25;
-      --quill-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M4 28c1-7 3-14 7-20C15 3 22 1 28 2c0 7-2 14-7 19-5 4-11 6-17 7Z' fill='%23f1e5c7' stroke='%2330251b' stroke-width='1.4'/%3E%3Cpath d='M5 27C11 21 18 11 27 3' fill='none' stroke='%23744d27' stroke-width='1.5'/%3E%3Cpath d='M8 24c-1-3-1-5 0-7m4 4c-1-3-1-6 0-9m4 4c-1-3 0-6 2-9m-4 15c3 0 5-1 7-3m-4-2c3 0 5-1 7-3m-3-2c3 0 5-2 7-4' fill='none' stroke='%23a18455' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='m4 28 4-5 2 3-6 2Z' fill='%23c29242' stroke='%2330251b' stroke-width='1'/%3E%3Cpath d='m5 27 3-3' stroke='%23fff4d7' stroke-width='.8'/%3E%3C/svg%3E") 4 28, auto;
+      --quill-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M5 42c3-11 7-21 14-29C25 7 34 4 43 5c1 9-2 18-8 24-7 7-17 10-29 13Z' fill='%23f5eedb' stroke='%2330251b' stroke-width='1.8'/%3E%3Cpath d='M7 40C17 31 28 18 41 7' fill='none' stroke='%23744d27' stroke-width='1.8'/%3E%3Cpath d='M12 36c-2-4-2-7 0-11m5 7c-2-5-1-10 1-15m5 11c-1-5 1-10 4-14m-4 20c5 0 9-2 12-5m-8-1c5 0 9-2 12-6m-7-2c4-1 8-3 11-7' fill='none' stroke='%23a18455' stroke-width='1.2' stroke-linecap='round'/%3E%3Cpath d='M7 40 4 46l7-4-2-4Z' fill='%23c29242' stroke='%2330251b' stroke-width='1.2'/%3E%3Cpath d='m7 41 3 1m-4 2 4-1' fill='none' stroke='%23fff4d7' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E") 5 42, auto;
       font-family: "Old English Text MT", "UnifrakturCook", "Palatino Linotype", "Book Antiqua", Georgia, serif;
     }
 
@@ -1160,11 +1160,110 @@
       setTheme(nextTheme, true);
     });
 
+    let medievalAudioContext = null;
+    let medievalFanfareTimer = null;
+    let medievalAudioGesturePending = false;
+    const medievalOscillators = new Set();
+
+    function playTrumpetFanfare() {
+      if (!medievalAudioContext || medievalAudioContext.state !== "running" ||
+          document.documentElement.dataset.medieval !== "true") return;
+
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      const firstNoteAt = medievalAudioContext.currentTime + 0.05;
+      notes.forEach((frequency, index) => {
+        const startAt = firstNoteAt + index * 0.24;
+        const stopAt = startAt + 0.21;
+        const oscillator = medievalAudioContext.createOscillator();
+        const gain = medievalAudioContext.createGain();
+        oscillator.type = "sawtooth";
+        oscillator.frequency.setValueAtTime(frequency, startAt);
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.045, startAt + 0.025);
+        gain.gain.setValueAtTime(0.045, startAt + 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+        oscillator.connect(gain);
+        gain.connect(medievalAudioContext.destination);
+        medievalOscillators.add(oscillator);
+        oscillator.addEventListener("ended", () => medievalOscillators.delete(oscillator), { once: true });
+        oscillator.start(startAt);
+        oscillator.stop(stopAt);
+      });
+    }
+
+    async function startMedievalTrumpet() {
+      const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextConstructor) {
+        medievalToggle.textContent = "Medieval mode: On (sound unavailable)";
+        medievalToggle.title = "Trumpet sounds are unavailable in this browser.";
+        console.warn("Medieval mode trumpet sounds are unavailable: Web Audio API is not supported.");
+        return;
+      }
+
+      try {
+        medievalAudioContext ||= new AudioContextConstructor();
+        await medievalAudioContext.resume();
+        if (document.documentElement.dataset.medieval !== "true") return;
+        if (medievalAudioContext.state !== "running") {
+          medievalToggle.textContent = "Medieval mode: On (tap for sound)";
+          medievalToggle.title = "Tap or press a key to enable trumpet sounds.";
+          waitForMedievalAudioGesture();
+          return;
+        }
+        medievalToggle.textContent = "Medieval mode: On";
+        medievalToggle.removeAttribute("title");
+        if (medievalFanfareTimer === null) {
+          playTrumpetFanfare();
+          medievalFanfareTimer = window.setInterval(playTrumpetFanfare, 1000);
+        }
+      } catch (error) {
+        medievalToggle.textContent = "Medieval mode: On (sound unavailable)";
+        medievalToggle.title = "Trumpet sounds could not be started.";
+        console.warn("Medieval mode trumpet sounds could not be started.", error);
+        if (document.documentElement.dataset.medieval === "true") waitForMedievalAudioGesture();
+      }
+    }
+
+    function waitForMedievalAudioGesture() {
+      if (medievalAudioGesturePending) return;
+      medievalAudioGesturePending = true;
+      window.addEventListener("pointerdown", resumeMedievalTrumpetFromGesture, { once: true });
+      window.addEventListener("keydown", resumeMedievalTrumpetFromGesture, { once: true });
+    }
+
+    function resumeMedievalTrumpetFromGesture() {
+      if (!medievalAudioGesturePending) return;
+      medievalAudioGesturePending = false;
+      window.removeEventListener("pointerdown", resumeMedievalTrumpetFromGesture);
+      window.removeEventListener("keydown", resumeMedievalTrumpetFromGesture);
+      if (document.documentElement.dataset.medieval === "true") startMedievalTrumpet();
+    }
+
+    function stopMedievalTrumpet() {
+      if (medievalFanfareTimer !== null) {
+        window.clearInterval(medievalFanfareTimer);
+        medievalFanfareTimer = null;
+      }
+      if (medievalAudioGesturePending) {
+        medievalAudioGesturePending = false;
+        window.removeEventListener("pointerdown", resumeMedievalTrumpetFromGesture);
+        window.removeEventListener("keydown", resumeMedievalTrumpetFromGesture);
+      }
+      medievalOscillators.forEach((oscillator) => oscillator.stop());
+      medievalOscillators.clear();
+      medievalToggle.removeAttribute("title");
+    }
+
     function setMedievalMode(enabled, persist = false) {
       document.documentElement.dataset.medieval = String(enabled);
       medievalToggle.setAttribute("aria-checked", String(enabled));
       medievalToggle.textContent = `Medieval mode: ${enabled ? "On" : "Off"}`;
       updateThemeColor();
+      if (enabled) {
+        startMedievalTrumpet();
+      } else {
+        stopMedievalTrumpet();
+      }
       if (persist) {
         try {
           localStorage.setItem("pediatricQuickCode.medievalMode", String(enabled));
