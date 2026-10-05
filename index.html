@@ -503,6 +503,7 @@
     .lucky-mode h2 { margin: 0; font-size: 18px; }
     .lucky-mode p { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
     .lucky-machine { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .lucky-machine { position: relative; }
     .lucky-reels { display: flex; gap: 5px; }
     .lucky-reel {
       display: grid;
@@ -517,6 +518,56 @@
     }
 
     .lucky-reel.is-spinning { animation: lucky-reel-spin 100ms linear infinite alternate; }
+
+    .lucky-machine.is-winner .lucky-reel {
+      border-color: var(--gold);
+      box-shadow: 0 0 16px rgb(242 195 107 / 65%);
+    }
+
+    .lucky-machine.is-medieval-winner .lucky-reel {
+      border-color: #8e7049;
+      background: #f0dfb5;
+      box-shadow: 0 0 18px rgb(142 112 73 / 75%);
+    }
+
+    .lucky-burst {
+      position: absolute;
+      z-index: 1;
+      top: 50%;
+      left: 71px;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    .lucky-burst-particle {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 9px;
+      height: 13px;
+      border-radius: 2px;
+      background: var(--gold);
+      animation: lucky-burst 850ms cubic-bezier(.12,.68,.26,1) forwards;
+    }
+
+    .lucky-burst-particle:nth-child(3n) { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); }
+    .lucky-burst-particle:nth-child(3n + 1) { background: var(--green); }
+    .lucky-machine.is-medieval-winner .lucky-burst-particle {
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: transparent !important;
+      font-size: 19px;
+      line-height: 1;
+      filter: drop-shadow(0 1px 1px rgb(61 42 24 / 35%));
+    }
+
+    @keyframes lucky-burst {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(.35) rotate(0); }
+      72% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--burst-x), var(--burst-y)) scale(1) rotate(var(--burst-rotation)); }
+    }
 
     @keyframes lucky-reel-spin {
       from { transform: translateY(-2px); }
@@ -1049,6 +1100,7 @@
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
       .medieval-rats { display: none; }
       .lucky-reel.is-spinning { animation: none; }
+      .lucky-burst-particle { animation: none; display: none; }
     }
   </style>
 </head>
@@ -1093,6 +1145,7 @@
           <span class="lucky-reel">⭐</span>
         </div>
         <button class="lucky-spin" id="lucky-spin" type="button">Spin</button>
+        <span class="lucky-burst" id="lucky-burst" aria-hidden="true"></span>
       </div>
       <span class="visually-hidden" id="lucky-status" role="status" aria-live="polite"></span>
     </section>
@@ -1267,17 +1320,36 @@
     const luckyReels = document.querySelector("#lucky-reels");
     const luckySpinButton = document.querySelector("#lucky-spin");
     const luckyStatus = document.querySelector("#lucky-status");
+    const luckyMachine = document.querySelector(".lucky-machine");
+    const luckyBurst = document.querySelector("#lucky-burst");
     const medievalRats = document.querySelector("#medieval-rats");
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     let medievalRatTimer = null;
-    const luckySymbols = ["🍀", "🔔", "⭐", "🪙", "🎲", "🍒"];
+    const luckySymbols = {
+      standard: ["🍀", "🔔", "⭐", "🪙", "🎲", "🍒"],
+      medieval: ["🏰", "⚔️", "👑", "🛡️", "🐉", "📜"]
+    };
     let luckySpinInterval = null;
     let luckySpinTimeout = null;
+    let luckyCelebrationTimeout = null;
+    let luckyAudioContext = null;
+
+    function getLuckySymbols() {
+      return document.documentElement.dataset.medieval === "true"
+        ? luckySymbols.medieval
+        : luckySymbols.standard;
+    }
 
     function showLuckySymbols() {
+      const symbols = getLuckySymbols();
       luckyReels.querySelectorAll(".lucky-reel").forEach((reel) => {
-        reel.textContent = luckySymbols[Math.floor(Math.random() * luckySymbols.length)];
+        reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
       });
+    }
+
+    function updateLuckySymbolTheme() {
+      if (luckyMode.hidden || luckySpinInterval !== null || luckySpinTimeout !== null) return;
+      showLuckySymbols();
     }
 
     function stopLuckySpin() {
@@ -1289,19 +1361,166 @@
         window.clearTimeout(luckySpinTimeout);
         luckySpinTimeout = null;
       }
+      if (luckyCelebrationTimeout !== null) {
+        window.clearTimeout(luckyCelebrationTimeout);
+        luckyCelebrationTimeout = null;
+      }
+      luckyMachine.classList.remove("is-winner");
+      luckyMachine.classList.remove("is-medieval-winner");
+      luckyBurst.replaceChildren();
       luckyReels.querySelectorAll(".lucky-reel").forEach((reel) => reel.classList.remove("is-spinning"));
       luckySpinButton.disabled = false;
     }
 
+    function prepareLuckyAudio() {
+      const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextConstructor) return false;
+
+      try {
+        luckyAudioContext ||= new AudioContextConstructor();
+        const resumePromise = luckyAudioContext.resume();
+        if (resumePromise && typeof resumePromise.catch === "function") {
+          resumePromise.catch((error) => console.warn("Lucky-mode celebration audio could not be enabled.", error));
+        }
+        return true;
+      } catch (error) {
+        console.warn("Lucky-mode celebration audio could not be prepared.", error);
+        return false;
+      }
+    }
+
+    function playLuckyWinSound(isMedieval) {
+      if (!luckyAudioContext || luckyAudioContext.state !== "running") return false;
+
+      try {
+        const now = luckyAudioContext.currentTime;
+        if (isMedieval) {
+          [392, 523.25, 659.25, 783.99].forEach((frequency, index) => {
+            const startAt = now + index * 0.16;
+            const stopAt = startAt + 0.24;
+            const oscillator = luckyAudioContext.createOscillator();
+            const filter = luckyAudioContext.createBiquadFilter();
+            const gain = luckyAudioContext.createGain();
+            oscillator.type = "sawtooth";
+            oscillator.frequency.setValueAtTime(frequency, startAt);
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(1450, startAt);
+            gain.gain.setValueAtTime(0.0001, startAt);
+            gain.gain.exponentialRampToValueAtTime(0.045, startAt + 0.025);
+            gain.gain.setValueAtTime(0.045, startAt + 0.14);
+            gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(luckyAudioContext.destination);
+            oscillator.start(startAt);
+            oscillator.stop(stopAt);
+          });
+          return true;
+        }
+
+        const noiseBuffer = luckyAudioContext.createBuffer(1, Math.floor(luckyAudioContext.sampleRate * 0.24), luckyAudioContext.sampleRate);
+        const noise = noiseBuffer.getChannelData(0);
+        for (let index = 0; index < noise.length; index += 1) {
+          noise[index] = Math.random() * 2 - 1;
+        }
+
+        const noiseSource = luckyAudioContext.createBufferSource();
+        const noiseFilter = luckyAudioContext.createBiquadFilter();
+        const noiseGain = luckyAudioContext.createGain();
+        noiseSource.buffer = noiseBuffer;
+        noiseFilter.type = "lowpass";
+        noiseFilter.frequency.setValueAtTime(1100, now);
+        noiseGain.gain.setValueAtTime(0.0001, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.16, now + 0.015);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+        noiseSource.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(luckyAudioContext.destination);
+        noiseSource.start(now);
+        noiseSource.stop(now + 0.25);
+
+        [587.33, 739.99, 880].forEach((frequency) => {
+          const oscillator = luckyAudioContext.createOscillator();
+          const gain = luckyAudioContext.createGain();
+          oscillator.type = "triangle";
+          oscillator.frequency.setValueAtTime(frequency, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(0.07, now + 0.025);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+          oscillator.connect(gain);
+          gain.connect(luckyAudioContext.destination);
+          oscillator.start(now);
+          oscillator.stop(now + 0.43);
+        });
+        return true;
+      } catch (error) {
+        console.warn("Lucky-mode winning sound could not be played.", error);
+        return false;
+      }
+    }
+
+    function celebrateLuckyMatch() {
+      const isMedieval = document.documentElement.dataset.medieval === "true";
+      luckyMachine.classList.toggle("is-winner", !isMedieval);
+      luckyMachine.classList.toggle("is-medieval-winner", isMedieval);
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reducedMotion) {
+        const colors = isMedieval
+          ? ["#c29242", "#8e7049", "#f1e5c7", "#9f2528"]
+          : ["#f2c36b", "#54c8ae", "#ff8c82", "#fff1cf"];
+        const medievalConfetti = ["✨", "👑", "⚔️", "🏰", "🛡️", "🐉"];
+        for (let index = 0; index < 24; index += 1) {
+          const particle = document.createElement("span");
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 55 + Math.random() * 65;
+          particle.className = "lucky-burst-particle";
+          particle.style.setProperty("--burst-x", `${Math.cos(angle) * distance}px`);
+          particle.style.setProperty("--burst-y", `${Math.sin(angle) * distance}px`);
+          particle.style.setProperty("--burst-rotation", `${Math.random() * 720 - 360}deg`);
+          if (isMedieval) {
+            particle.textContent = medievalConfetti[index % medievalConfetti.length];
+          } else {
+            particle.style.backgroundColor = colors[index % colors.length];
+          }
+          luckyBurst.append(particle);
+        }
+      }
+      const soundPlayed = playLuckyWinSound(isMedieval);
+      luckyStatus.textContent = soundPlayed
+        ? `Three matching symbols! ${isMedieval ? "A royal medieval celebration!" : "Celebration!"} No medication or calculation was changed.`
+        : `Three matching symbols! No medication or calculation was changed. ${isMedieval ? "Medieval celebration sound" : "Celebration sound"} is unavailable.`;
+
+      if (luckyCelebrationTimeout !== null) window.clearTimeout(luckyCelebrationTimeout);
+      luckyCelebrationTimeout = window.setTimeout(() => {
+        luckyMachine.classList.remove("is-winner");
+        luckyMachine.classList.remove("is-medieval-winner");
+        luckyBurst.replaceChildren();
+        luckyCelebrationTimeout = null;
+      }, reducedMotion ? 1200 : 900);
+    }
+
     function spinLuckyReels() {
       if (luckySpinInterval !== null || luckySpinTimeout !== null) return;
+      prepareLuckyAudio();
+      if (luckyCelebrationTimeout !== null) {
+        window.clearTimeout(luckyCelebrationTimeout);
+        luckyCelebrationTimeout = null;
+      }
+      luckyMachine.classList.remove("is-winner");
+      luckyMachine.classList.remove("is-medieval-winner");
+      luckyBurst.replaceChildren();
       luckySpinButton.disabled = true;
       luckyStatus.textContent = "Spinning decorative symbols.";
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         showLuckySymbols();
         luckySpinButton.disabled = false;
-        luckyStatus.textContent = "Spin complete. No medication or calculation was changed.";
+        const symbols = [...luckyReels.querySelectorAll(".lucky-reel")].map((reel) => reel.textContent);
+        if (symbols.every((symbol) => symbol === symbols[0])) {
+          celebrateLuckyMatch();
+        } else {
+          luckyStatus.textContent = "Spin complete. No medication or calculation was changed.";
+        }
         return;
       }
 
@@ -1314,7 +1533,12 @@
         luckyReels.querySelectorAll(".lucky-reel").forEach((reel) => reel.classList.remove("is-spinning"));
         showLuckySymbols();
         luckySpinButton.disabled = false;
-        luckyStatus.textContent = "Spin complete. No medication or calculation was changed.";
+        const symbols = [...luckyReels.querySelectorAll(".lucky-reel")].map((reel) => reel.textContent);
+        if (symbols.every((symbol) => symbol === symbols[0])) {
+          celebrateLuckyMatch();
+        } else {
+          luckyStatus.textContent = "Spin complete. No medication or calculation was changed.";
+        }
       }, 1100);
     }
 
@@ -1510,6 +1734,7 @@
       medievalToggle.setAttribute("aria-checked", String(enabled));
       medievalToggle.textContent = `Medieval mode: ${enabled ? "On" : "Off"}`;
       updateThemeColor();
+      updateLuckySymbolTheme();
       if (enabled) {
         startMedievalRats();
         startMedievalTrumpet();
