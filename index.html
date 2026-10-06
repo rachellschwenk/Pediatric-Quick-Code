@@ -1080,10 +1080,6 @@
           <h2 id="dosage-heading">Dosage calculations</h2>
           <p>Preloaded regimens appear here automatically.</p>
         </div>
-        <button class="text-button" id="add-dose" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          Add calculation
-        </button>
       </div>
       <div class="dose-list" id="dose-list" aria-live="polite"></div>
     </section>
@@ -1513,8 +1509,8 @@
     concentration: 100, // Optional, in mg/mL
     concentrationUnit: "mg/mL",
     infusionTime: "5-10 minutes. Do not exceed 100mg/min except in emergencies.",
-    highalertmessage: "Dilute to 20mg/mL. Preferred for Peripheral Access.",
-    preparationdetails: "Dilute to 20mg/mL with D5W or NS"
+    highAlertMessage: "Dilute to 20mg/mL. Preferred for Peripheral Access.",
+    preparationDetails: "Dilute to 20mg/mL with D5W or NS"
   },
   {
     name: "Cisatracurium",
@@ -1954,7 +1950,7 @@
       amountRate.textContent = amount !== null ? `(${formatAmount(doseRate)} mg/kg/dose)` : "";
       amountResult.classList.toggle("empty-result", amount === null);
 
-      let volumeMessage = "Add concentration";
+      let volumeMessage = weight > 0 ? "Add concentration" : "";
       if (amount !== null && concentration > 0) {
         volumeMessage = `${formatAmount(amount / concentration)} mL`;
       }
@@ -2150,11 +2146,6 @@
       doseList.querySelectorAll(".dose-card").forEach(updateCalculation);
     });
     medicationSearch.addEventListener("input", applyMedicationFilters);
-    document.querySelector("#add-dose").addEventListener("click", () => {
-      medicationSearch.value = "";
-      applyCategoryFilter("__all__");
-      addCalculation();
-    });
     document.querySelector("#toggle-preset-form").addEventListener("click", (event) => {
       presetForm.hidden = !presetForm.hidden;
       event.currentTarget.setAttribute("aria-expanded", String(!presetForm.hidden));
