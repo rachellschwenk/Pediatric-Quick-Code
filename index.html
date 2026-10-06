@@ -545,6 +545,14 @@
       font-size: 12px;
     }
 
+    .medication-controls {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding-bottom: 8px;
+      background: var(--paper);
+    }
+
     .category-toolbar {
       display: flex;
       align-items: center;
@@ -1063,15 +1071,17 @@
       </div>
     </section>
 
-    <div class="category-toolbar" aria-label="Filter medications by category">
-      <span class="category-toolbar-label">Filter by category</span>
-      <div class="category-filter" id="category-filter" role="group" aria-label="Medication categories"></div>
-    </div>
+    <div class="medication-controls">
+      <div class="category-toolbar" aria-label="Filter medications by category">
+        <span class="category-toolbar-label">Filter by category</span>
+        <div class="category-filter" id="category-filter" role="group" aria-label="Medication categories"></div>
+      </div>
 
-    <div class="medication-search">
-      <label for="medication-search">Search medications</label>
-      <input id="medication-search" type="search" placeholder="Type a medication name" autocomplete="off">
-      <p class="medication-search-status" id="medication-search-status" aria-live="polite"></p>
+      <div class="medication-search">
+        <label for="medication-search">Search medications</label>
+        <input id="medication-search" type="search" placeholder="Type a medication name" autocomplete="off">
+        <p class="medication-search-status" id="medication-search-status" aria-live="polite"></p>
+      </div>
     </div>
 
     <section aria-labelledby="dosage-heading">
