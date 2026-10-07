@@ -833,7 +833,7 @@
     }
 
     .high-alert-message {
-      margin: 0;
+      margin: 0 12px 10px;
       padding: 10px 12px;
       border: 1px solid var(--alert-border);
       border-left: 5px solid var(--alert-border);
@@ -1173,10 +1173,10 @@
           <div class="volume-result result-value empty-result">Add concentration</div>
         </div>
       </div>
+      <p class="high-alert-message" hidden role="note"><strong>High-alert: </strong><span class="high-alert-copy"></span></p>
       <details class="dose-settings">
         <summary>Regimen details</summary>
         <div class="dose-card-body">
-          <p class="high-alert-message" hidden role="note"><strong>High-alert: </strong><span class="high-alert-copy"></span></p>
           <div class="regimen-core">
             <div class="field">
               <label class="name-label">Medication / regimen name</label>
@@ -1637,7 +1637,7 @@
     concentrationUnit: "mgPE/mL",
     infusionTime: "10-30 minutes",
     highAlertMessage: "Must dilute. Not recommended in < 2 months. Phenobarbital 20mg/kg alternative.",
-    Infusiondetails: "Dilute to 10mgPE/mL in D5W or NS"
+    preparationDetails: "Dilute to 10mgPE/mL in D5W or NS"
   },
   {
     name: "Ketamine",
